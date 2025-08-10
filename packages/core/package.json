@@ -6,5 +6,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@bottle-monitor/types": "workspace:*",
+    "@bottle-monitor/utils": "workspace:*"
+  }
 }
