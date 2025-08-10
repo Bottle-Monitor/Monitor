@@ -1,0 +1,30 @@
+{
+    "name": "bottle-monitor",
+    "author": "Bottle414",
+    "version": "1.0.0",
+    "private": false,
+    "description": "A frontend monitor project",
+    "scripts": {
+        "build": "rollup -c",
+        "build:all": "pnpm -r run build",
+        "lint:all": "pnpm -r run lint",
+        "demo": "pnpm --filter demo run dev",
+        "server": "pnpm --filter server run dev"
+    },
+    "main": "src/index.ts",
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "license": "ISC",
+    "dependencies": {
+        "ua-parser-js": "^2.0.4"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^28.0.6",
+        "@rollup/plugin-node-resolve": "^16.0.1",
+        "rollup": "^4.45.1",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "typescript": "^5.8.3"
+    }
+}
