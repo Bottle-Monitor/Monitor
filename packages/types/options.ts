@@ -32,9 +32,9 @@ export enum CATEGORY {
 /**
  * 行为栈
  */
-type BreadcrumbType = 'user' | 'vitals' | 'abnormal' | 'custom'
+export type BreadcrumbType = 'user' | 'vitals' | 'abnormal' | 'custom'
 export interface Breadcrumb {
-    type: BreadcrumbType
+    breadcrumbType: BreadcrumbType
     breadcrumbId?: string // 行为栈标识
     capacity: number // 最大存储量，1 为立即上报
     uploadInterval?: number // 定时上报间隔
