@@ -33,18 +33,18 @@ export enum CATEGORY {
  * 行为栈
  */
 export type BreadcrumbType = 'user' | 'vitals' | 'abnormal' | 'custom'
-export interface Breadcrumb {
+export interface BreadcrumbOption {
     breadcrumbType: BreadcrumbType
-    breadcrumbId?: string // 行为栈标识
+    breadcrumbId?: string // 行为栈标识, 自定义栈要有
     capacity: number // 最大存储量，1 为立即上报
     uploadInterval?: number // 定时上报间隔
 }
-type BreadcrumbOptions = Breadcrumb[]
+export type BreadcrumbOptions = BreadcrumbOption[]
 
 /**
  * 禁用选项
  */
-type SilentOptions = Partial<{
+export type SilentOptions = Partial<{
     click: boolean
     hashHistory: boolean
     history: boolean
@@ -59,7 +59,7 @@ type SilentOptions = Partial<{
 /**
  * 生命周期
  */
-type Hook = Partial<{
+export type Hook = Partial<{
     beforePushBreadcrumb: (data: any) => void // 行为栈添加前
     beroreTransport: (data: any) => Promise<boolean> // 数据上报前
 }>

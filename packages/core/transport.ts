@@ -14,7 +14,12 @@ export interface Breadcrumb {
     queue: TransportData[]
 }
 
-const Transport = (dsnURL: string) => {
+export interface TransportReturn {
+    send: (breadcrumbType: BreadcrumbType, data: TransportData) => void
+    initBreadcrumb: (breadcrumbOptions: BreadcrumbOptions) => void
+}
+
+const Transport = (dsnURL: string): TransportReturn => {
     let breadcrumbs = {} as Record<BreadcrumbType, Breadcrumb>
 
     const initBreadcrumb = (breadcrumbOptions: BreadcrumbOptions) => {
