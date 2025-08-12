@@ -8,6 +8,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@bottle-monitor/utils": "workspace:*"
+    "@bottle-monitor/utils": "workspace:*",
+    "@bottle-monitor/types": "workspace:*",
+    "@bottle-monitor/core": "workspace:*"
   }
 }

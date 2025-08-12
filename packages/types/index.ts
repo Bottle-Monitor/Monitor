@@ -1,3 +1,6 @@
 export * from './options'
 export * from './data'
 export * from './global'
+export * from './tracker'
+export * from './eventBus'
+export * from './error'

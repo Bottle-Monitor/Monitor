@@ -1,4 +1,4 @@
-import { TrackerPlugin } from "@bottle-monitor/types/tracker"
+import { TrackerPlugin } from "@bottle-monitor/types"
 import Tracker from "./tracker"
 import { InitOptions } from "@bottle-monitor/types"
 

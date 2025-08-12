@@ -3,12 +3,6 @@
  *  1. <T extends Record<string, (...args: any[]) => void>> 将对象的键值映射
  *  2. Parameters<T[K]> 推导参数回调
  */
-export interface EventBusReturn {
-    emit: (event: string, ...args: any[]) => void
-    on: (event: string, callback: (...args: any[]) => void) => void
-    off: (event: string, callback?: (...args: any[]) => void) => void
-    once: (event: string, callback: (...args: any[]) => void) => void
-}
 
 const EventBus = <T extends Record<string, (...args: any[]) => void>>() => {
     // 事件列表
