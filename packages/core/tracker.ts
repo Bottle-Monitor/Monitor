@@ -7,7 +7,7 @@ import {
 } from '@bottle-monitor/types'
 import EventBus from './eventBus'
 import Transport from './transport'
-import ErrorPlugin from '../plugins/error'
+import { ErrorPlugin, RoutePlugin } from '@bottle-monitor/plugins'
 
 /**
  * 插件注册
@@ -17,7 +17,7 @@ const Tracker = () => {
     let eventBus: EventBusReturn | null = null
     // 初始化发送器
     let transport: TransportReturn | null = null
-    
+
     const handleTransport = (
         breadcrumbType: BreadcrumbType,
         data: TransportData
@@ -34,6 +34,11 @@ const Tracker = () => {
 
         // 初始化插件
         ErrorPlugin({
+            eventBus,
+            initOptions
+        })
+
+        RoutePlugin({
             eventBus,
             initOptions
         })

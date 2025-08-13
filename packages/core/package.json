@@ -9,6 +9,7 @@
   "description": "",
   "dependencies": {
     "@bottle-monitor/types": "workspace:*",
-    "@bottle-monitor/utils": "workspace:*"
+    "@bottle-monitor/utils": "workspace:*",
+    "@bottle-monitor/plugins": "workspace:*"
   }
 }

@@ -1,4 +1,4 @@
-import { ABNORMAL, EventBusReturn, InitOptions } from '@bottle-monitor/types'
+import { ABNORMAL, CATEGORY, EventBusReturn, InitOptions } from '@bottle-monitor/types'
 
 // TODO: 后续可以细化为只传递所需插件的选项，将 initOptions 拆解为按插件区分的部分
 const ErrorPlugin = ({
@@ -9,8 +9,8 @@ const ErrorPlugin = ({
     initOptions: InitOptions
 }) => {
     const capturePromise = () => {
-        window.addEventListener('unhandledrejection', (ev) => {
-            eventBus.emit('bottle-monitor:transport', {
+        window.addEventListener('unhandledrejection', (ev): void => {
+            eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
                 type: ABNORMAL.UNHANDLEDREJECTION,
                 message: ev.reason?.message || String(ev.reason),
                 stack: ev.reason.stack
@@ -24,7 +24,7 @@ const ErrorPlugin = ({
      */
     const handleCodeError = (e: ErrorEvent) => {
         console.log('cpatured code error!')
-        eventBus.emit('bottle-monitor:transport', {
+        eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
             type: ABNORMAL.CODE,
             message: e.error.message,
             stack: e.error.stack,
@@ -53,7 +53,7 @@ const ErrorPlugin = ({
         //     url = target?.currentSrc || target?.outerHTML
         // }
 
-        eventBus.emit('bottle-monitor:transport', {
+        eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
             type: ABNORMAL.RESOURCE,
             message: url
         })

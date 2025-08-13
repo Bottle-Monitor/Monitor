@@ -34,6 +34,7 @@ const Transport = (dsnURL: string): TransportReturn => {
     const send = (breadcrumbType: BreadcrumbType, data: TransportData) => {
         // BUG: 此处，有闭包问题
         const breadcrumb = breadcrumbs[breadcrumbType]
+        console.log(breadcrumbType);
         if (breadcrumb) {
             const { queue, capacity } = breadcrumb
             queue.push(data)
@@ -72,7 +73,7 @@ const Transport = (dsnURL: string): TransportReturn => {
         if (!sendByBeacon(queue)) {
             sendByFetch(queue)
         }
-        console.log('data flushed!')
+        console.log('data flushed!', queue)
         // 清空相应队列, 更新发送时间
         breadcrumbs[breadcrumbType].queue = []
         breadcrumbs[breadcrumbType].lastUpload = Date.now()
