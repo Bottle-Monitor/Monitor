@@ -1,23 +1,13 @@
 import {
+    Breadcrumb,
     BreadcrumbOptions,
     BreadcrumbType,
-    TransportData
+    TransportData,
+    TransportReturn
 } from '@bottle-monitor/types'
 /**
  * 事件上报
  */
-export interface Breadcrumb {
-    breadcrumbId?: string
-    capacity: number
-    uploadInterval?: number
-    lastUpload?: number
-    queue: TransportData[]
-}
-
-export interface TransportReturn {
-    send: (breadcrumbType: BreadcrumbType, data: TransportData) => void
-    initBreadcrumb: (breadcrumbOptions: BreadcrumbOptions) => void
-}
 
 const Transport = (dsnURL: string): TransportReturn => {
     let breadcrumbs = {} as Record<BreadcrumbType, Breadcrumb>
@@ -42,6 +32,7 @@ const Transport = (dsnURL: string): TransportReturn => {
 
     // 监听到 transport 事件触发时发送
     const send = (breadcrumbType: BreadcrumbType, data: TransportData) => {
+        // BUG: 此处，有闭包问题
         const breadcrumb = breadcrumbs[breadcrumbType]
         if (breadcrumb) {
             const { queue, capacity } = breadcrumb
@@ -81,6 +72,7 @@ const Transport = (dsnURL: string): TransportReturn => {
         if (!sendByBeacon(queue)) {
             sendByFetch(queue)
         }
+        console.log('data flushed!')
         // 清空相应队列, 更新发送时间
         breadcrumbs[breadcrumbType].queue = []
         breadcrumbs[breadcrumbType].lastUpload = Date.now()

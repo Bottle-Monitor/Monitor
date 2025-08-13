@@ -2,10 +2,12 @@ import {
     BreadcrumbType,
     EventBusReturn,
     InitOptions,
-    TransportData
+    TransportData,
+    TransportReturn
 } from '@bottle-monitor/types'
 import EventBus from './eventBus'
-import Transport, { TransportReturn } from './transport'
+import Transport from './transport'
+import ErrorPlugin from '../plugins/error'
 
 /**
  * 插件注册
@@ -15,13 +17,12 @@ const Tracker = () => {
     let eventBus: EventBusReturn | null = null
     // 初始化发送器
     let transport: TransportReturn | null = null
-    // 初始化插件
-    let errorPlugin: EventBusReturn | null = null
-
+    
     const handleTransport = (
         breadcrumbType: BreadcrumbType,
         data: TransportData
     ) => {
+        console.log('transport recived!')
         transport?.send(breadcrumbType, data)
     }
 
@@ -30,6 +31,12 @@ const Tracker = () => {
         transport = Transport(initOptions.dsnURL) as TransportReturn
         transport.initBreadcrumb(initOptions.breadcrumb || [])
         eventBus.on('bottle-monitor:transport', handleTransport)
+
+        // 初始化插件
+        ErrorPlugin({
+            eventBus,
+            initOptions
+        })
 
         const silent = initOptions.silent
     }
