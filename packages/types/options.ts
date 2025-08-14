@@ -46,7 +46,7 @@ export type BreadcrumbOptions = BreadcrumbOption[]
  */
 export type SilentOptions = Partial<{
     click: boolean
-    hashHistory: boolean
+    hash: boolean
     history: boolean
     webVitals: boolean
     error: boolean

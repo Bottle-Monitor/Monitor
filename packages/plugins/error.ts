@@ -1,4 +1,5 @@
 import { ABNORMAL, CATEGORY, EventBusReturn, InitOptions } from '@bottle-monitor/types'
+import ErrorStackParser from 'error-stack-parser'
 
 // TODO: 后续可以细化为只传递所需插件的选项，将 initOptions 拆解为按插件区分的部分
 const ErrorPlugin = ({
@@ -12,8 +13,8 @@ const ErrorPlugin = ({
         window.addEventListener('unhandledrejection', (ev): void => {
             eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
                 type: ABNORMAL.UNHANDLEDREJECTION,
-                message: ev.reason?.message || String(ev.reason),
-                stack: ev.reason.stack
+                message: ev.reason,
+                stack: ErrorStackParser.parse(ev.reason.stack)
             })
         })
     }
@@ -27,7 +28,7 @@ const ErrorPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
             type: ABNORMAL.CODE,
             message: e.error.message,
-            stack: e.error.stack,
+            stack: ErrorStackParser.parse(e.error.stack),
             filename: e.filename,
             lineno: e.lineno,
             colno: e.colno
@@ -41,21 +42,12 @@ const ErrorPlugin = ({
             | HTMLLinkElement
             | HTMLImageElement
 
-        let url: string | undefined
-
-        // if (target instanceof HTMLImageElement) {
-        //     url = target.src
-        // } else if (target instanceof HTMLLinkElement) {
-        //     url = target.href
-        // } else if (target instanceof HTMLScriptElement) {
-        //     url = target.src
-        // } else {
-        //     url = target?.currentSrc || target?.outerHTML
-        // }
-
         eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
             type: ABNORMAL.RESOURCE,
-            message: url
+            message: JSON.stringify({
+                resourceType: target.tagName,
+                resourceURL: (target as HTMLImageElement).src || (target as HTMLLinkElement).href
+            })
         })
     }
 
@@ -84,7 +76,6 @@ const ErrorPlugin = ({
         if (!resource || !codeError) captureError()
         !unhandledrejection && capturePromise()
         !whitescreen && captureWhiteScreen()
-        console.log('Error Plugin init!')
     }
 
     initPlugin()

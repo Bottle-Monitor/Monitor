@@ -32,9 +32,7 @@ const Transport = (dsnURL: string): TransportReturn => {
 
     // 监听到 transport 事件触发时发送
     const send = (breadcrumbType: BreadcrumbType, data: TransportData) => {
-        // BUG: 此处，有闭包问题
         const breadcrumb = breadcrumbs[breadcrumbType]
-        console.log(breadcrumbType);
         if (breadcrumb) {
             const { queue, capacity } = breadcrumb
             queue.push(data)

@@ -7,7 +7,11 @@ import {
 } from '@bottle-monitor/types'
 import EventBus from './eventBus'
 import Transport from './transport'
-import { ErrorPlugin, RoutePlugin } from '@bottle-monitor/plugins'
+import {
+    ErrorPlugin,
+    RoutePlugin,
+    WebVitalsPlugin
+} from '@bottle-monitor/plugins'
 
 /**
  * 插件注册
@@ -39,6 +43,11 @@ const Tracker = () => {
         })
 
         RoutePlugin({
+            eventBus,
+            initOptions
+        })
+
+        WebVitalsPlugin({
             eventBus,
             initOptions
         })
