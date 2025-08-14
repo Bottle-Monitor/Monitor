@@ -2,7 +2,7 @@ import { Req, Res } from "../types"
 
 export function handleReport(req: Req, res: Res){
     const data = req.body
-    console.log(data);
+    console.log('server recived: ', data);
 
     res.send({
         status: 200,
