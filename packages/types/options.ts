@@ -11,7 +11,15 @@ export enum USER {
 }
 
 export enum VITALS {
-    WEBVITALS = 'web-vitals' // 性能检测
+    FCP = 'FCP',
+    CLS = 'CLS',
+    INP = 'INP',
+    FID = 'FID',
+    FPS = 'FPS',
+    FSP = 'FSP',
+    LCP = 'LCP',
+    TTFB = 'TTFB',
+    Resource = 'resource'
 }
 
 export enum ABNORMAL {
@@ -47,15 +55,33 @@ export type BreadcrumbOptions = BreadcrumbOption[]
  * 禁用选项
  */
 export type SilentOptions = Partial<{
+    /* USER */
+    user: boolean
     click: boolean
     hash: boolean
     history: boolean
-    webVitals: boolean
+    
+    /* ABNORMAL */
+    abnormal: boolean
     error: boolean
     codeError: boolean
     unhandledrejection: boolean
     resource: boolean
     whitescreen: boolean
+
+    /* WEB_VITALS */
+    webVitals: boolean
+
+    /* CORE WEB_VITALS */
+    FCP: boolean
+    CLS: boolean
+    INP: boolean
+    FID: boolean
+    FPS: boolean
+    FSP: boolean
+    LCP: boolean
+    Resource: boolean
+    TTFB: boolean
 }>
 
 /**

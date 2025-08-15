@@ -1,4 +1,9 @@
-import { ABNORMAL, CATEGORY, EventBusReturn, InitOptions } from '@bottle-monitor/types'
+import {
+    ABNORMAL,
+    CATEGORY,
+    EventBusReturn,
+    InitOptions
+} from '@bottle-monitor/types'
 import ErrorStackParser from 'error-stack-parser'
 
 // TODO: 后续可以细化为只传递所需插件的选项，将 initOptions 拆解为按插件区分的部分
@@ -12,6 +17,7 @@ export const ErrorPlugin = ({
     const capturePromise = () => {
         window.addEventListener('unhandledrejection', (ev): void => {
             eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
+                category: CATEGORY.ABNORMAL,
                 type: ABNORMAL.UNHANDLEDREJECTION,
                 message: ev.reason,
                 stack: ErrorStackParser.parse(ev.reason.stack)
@@ -26,6 +32,7 @@ export const ErrorPlugin = ({
     const handleCodeError = (e: ErrorEvent) => {
         console.log('cpatured code error!')
         eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
+            category: CATEGORY.ABNORMAL,
             type: ABNORMAL.CODE,
             message: e.error.message,
             stack: ErrorStackParser.parse(e.error.stack),
@@ -43,10 +50,13 @@ export const ErrorPlugin = ({
             | HTMLImageElement
 
         eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
+            category: CATEGORY.ABNORMAL,
             type: ABNORMAL.RESOURCE,
             message: JSON.stringify({
                 resourceType: target.tagName,
-                resourceURL: (target as HTMLImageElement).src || (target as HTMLLinkElement).href
+                resourceURL:
+                    (target as HTMLImageElement).src ||
+                    (target as HTMLLinkElement).href
             })
         })
     }

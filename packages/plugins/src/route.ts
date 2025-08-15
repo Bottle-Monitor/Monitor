@@ -18,6 +18,7 @@ export const RoutePlugin = ({
         history.pushState = (...args) => {
             rowPush.apply(history, args)
             eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                category: CATEGORY.USER,
                 type: USER.HISTORY_ROUTE,
                 method: 'pushState',
                 url: location.href
@@ -28,6 +29,7 @@ export const RoutePlugin = ({
         history.replaceState = (...args) => {
             rowReplace.apply(history, args)
             eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                category: CATEGORY.USER,
                 type: USER.HASH_ROUTE,
                 method: 'replaceState',
                 url: location.href
@@ -36,6 +38,7 @@ export const RoutePlugin = ({
 
         window.addEventListener('popstate', (e: PopStateEvent) => {
             eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                category: CATEGORY.USER,
                 type: USER.HISTORY_ROUTE,
                 method: 'popstate',
                 state: e.state
@@ -54,6 +57,7 @@ export const RoutePlugin = ({
     const captureHashRoute = () => {
         window.addEventListener('hashchange', (e: HashChangeEvent) => {
             eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                category: CATEGORY.USER,
                 type: USER.HASH_ROUTE,
                 from: e.oldURL,
                 to: e.newURL

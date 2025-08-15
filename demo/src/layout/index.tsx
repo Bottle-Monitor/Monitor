@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 
 export function Layout() {
-    const [handledData, setHandledData] = useState('')
+    const [dataList, setDataList] = useState<string[]>([])
 
     // const beroreTransport = (data: any) => {
     //     console.log('beforeTransport: ', data)
@@ -12,8 +12,25 @@ export function Layout() {
     useEffect(() => {
         const eventSource = new EventSource('/api/data')
         eventSource.onmessage = (e) => {
-            setHandledData(JSON.parse(e.data))
+            setDataList([dataList, JSON.parse(e.data)])
         }
+
+        setTimeout(() => {
+            const CLSBlock = document.querySelector('.cls-block')
+            if (CLSBlock) {
+                const img = new Image()
+                img.src = 'https://picsum.photos/50/100'
+                CLSBlock.appendChild(img)
+            }
+        }, 300)
+        setTimeout(() => {
+            const CLSBlock = document.querySelector('.cls-block')
+            if (CLSBlock) {
+                const img = new Image()
+                img.src = 'https://picsum.photos/50/100'
+                CLSBlock.appendChild(img)
+            }
+        }, 400)
     }, [])
 
     /* 相对路径才会代理 */
@@ -21,22 +38,22 @@ export function Layout() {
         userId: '12',
         dsnURL: '/api/report',
         breadcrumbs: [
-            {
-                breadcrumbType: 'abnormal',
-                perBeforePushBreadcrumb(data) {
-                    console.log('before per push breadcrumb: ', data)
-                },
-                capacity: 1
-            },
+            // {
+            //     breadcrumbType: 'abnormal',
+            //     // perBeforePushBreadcrumb(data) {
+            //     //     console.log('before per push breadcrumb: ', data)
+            //     // },
+            //     capacity: 1
+            // },
             {
                 breadcrumbType: 'vitals',
                 capacity: 1
             },
-            {
-                breadcrumbType: 'user',
-                capacity: 2
-            }
-        ],
+            // {
+            //     breadcrumbType: 'user',
+            //     capacity: 2
+            // }
+        ]
         // hook: {
         //     beroreTransport
         // }
@@ -60,7 +77,7 @@ export function Layout() {
             <div
                 className="route-block"
                 style={{
-                    width: '500px',
+                    width: '550px',
                     height: '100px',
                     border: '2px solid lightblue'
                 }}
@@ -74,10 +91,16 @@ export function Layout() {
                     height: '300px',
                     border: '2px solid coral',
                     marginTop: '20px',
-                    overflow: 'scroll'
+                    padding: '25px',
+                    overflowY: 'auto',
+                    whiteSpace: 'wrap'
                 }}
             >
-                {handledData}
+                <ul style={{ padding: '0', margin: 0, listStyle: 'inside', wordBreak: 'break-word' }}>
+                    {dataList.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
             </div>
             <NavLink to="/why">To Why</NavLink>
             <hr />
@@ -88,6 +111,18 @@ export function Layout() {
             <a href="https://www.bilibili.com/">
                 I'm a link! Test for history route!
             </a>
+            <div
+                className="cls-block"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    border: '1px solid lightgreen',
+                    padding: '5px'
+                }}
+            >
+                CLS Test
+            </div>
         </>
     )
 }
