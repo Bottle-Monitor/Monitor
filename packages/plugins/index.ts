@@ -1,5 +1,3 @@
-import ErrorPlugin from './error'
-import RoutePlugin from './route'
-import WebVitalsPlugin from './perf'
-
-export { ErrorPlugin, RoutePlugin, WebVitalsPlugin }
+export * from './src/error'
+export * from './src/perf'
+export * from './src/route'

@@ -38,6 +38,8 @@ export interface BreadcrumbOption {
     breadcrumbId?: string // 行为栈标识, 自定义栈要有
     capacity: number // 最大存储量，1 为立即上报
     uploadInterval?: number // 定时上报间隔
+    perBeforePushBreadcrumb?: (data: any) => any // 不同队列的 hook
+    perBeroreTransport?: (data: any) => any
 }
 export type BreadcrumbOptions = BreadcrumbOption[]
 
@@ -60,8 +62,8 @@ export type SilentOptions = Partial<{
  * 生命周期
  */
 export type Hook = Partial<{
-    beforePushBreadcrumb: (data: any) => void // 行为栈添加前
-    beroreTransport: (data: any) => Promise<boolean> // 数据上报前
+    beforePushBreadcrumb: (data: any) => any // 行为栈添加前
+    beroreTransport: (data: any) => any // 数据上报前
 }>
 
 /**
@@ -81,7 +83,7 @@ export interface InitOptions {
     framework?: FrameWork
     filterXhrUrlRegExp?: RegExp // 过滤接口请求的正则
     silent?: SilentOptions
-    breadcrumb?: BreadcrumbOptions
-    hook?: Hook
+    breadcrumbs?: BreadcrumbOptions
+    hooks?: Hook
     [key: string]: any
 }

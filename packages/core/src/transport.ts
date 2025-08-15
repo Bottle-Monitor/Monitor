@@ -5,23 +5,34 @@ import {
     TransportData,
     TransportReturn
 } from '@bottle-monitor/types'
+import { runHook } from '@bottle-monitor/utils'
+
 /**
  * 事件上报
  */
-
-const Transport = (dsnURL: string): TransportReturn => {
+const Transport = (
+    dsnURL: string,
+    beroreTransport?: (data: any) => any,
+    beforePushBreadcrumb?: (data: any) => any
+): TransportReturn => {
     let breadcrumbs = {} as Record<BreadcrumbType, Breadcrumb>
 
     const initBreadcrumb = (breadcrumbOptions: BreadcrumbOptions) => {
         breadcrumbOptions.forEach((option) => {
-            const { breadcrumbType, breadcrumbId, capacity, uploadInterval } =
-                option
+            const {
+                breadcrumbType,
+                breadcrumbId,
+                capacity,
+                uploadInterval,
+                perBeforePushBreadcrumb
+            } = option
             breadcrumbs[breadcrumbType] = {
                 capacity: capacity,
                 breadcrumbId,
                 uploadInterval,
                 lastUpload: Date.now(),
-                queue: []
+                queue: [],
+                perBeforePushBreadcrumb
             }
 
             if (uploadInterval) {
@@ -34,7 +45,11 @@ const Transport = (dsnURL: string): TransportReturn => {
     const send = (breadcrumbType: BreadcrumbType, data: TransportData) => {
         const breadcrumb = breadcrumbs[breadcrumbType]
         if (breadcrumb) {
-            const { queue, capacity } = breadcrumb
+            const { queue, capacity, perBeforePushBreadcrumb } = breadcrumb
+
+            runHook(perBeforePushBreadcrumb, data)
+            runHook(beforePushBreadcrumb, data)
+
             queue.push(data)
 
             // 双触发设计
@@ -42,7 +57,7 @@ const Transport = (dsnURL: string): TransportReturn => {
                 flush(breadcrumbType, true)
             }
         } else {
-            console.warn(`${breadcrumbType} 队列不存在!`)
+            console.warn(`${breadcrumbType} queue is not exist!`)
         }
     }
 
@@ -58,7 +73,7 @@ const Transport = (dsnURL: string): TransportReturn => {
     }
 
     const flush = (breadcrumbType: BreadcrumbType, full?: boolean) => {
-        const { queue, uploadInterval, lastUpload } =
+        const { queue, uploadInterval, lastUpload, perBeroreTransport } =
             breadcrumbs[breadcrumbType]
         if (queue.length === 0) return
         if (
@@ -71,6 +86,10 @@ const Transport = (dsnURL: string): TransportReturn => {
         if (!sendByBeacon(queue)) {
             sendByFetch(queue)
         }
+
+        runHook(perBeroreTransport, queue)
+        runHook(beroreTransport, queue)
+
         console.log('data flushed!', queue)
         // 清空相应队列, 更新发送时间
         breadcrumbs[breadcrumbType].queue = []

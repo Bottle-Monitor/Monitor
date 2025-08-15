@@ -2,7 +2,7 @@ import { ABNORMAL, CATEGORY, EventBusReturn, InitOptions } from '@bottle-monitor
 import ErrorStackParser from 'error-stack-parser'
 
 // TODO: 后续可以细化为只传递所需插件的选项，将 initOptions 拆解为按插件区分的部分
-const ErrorPlugin = ({
+export const ErrorPlugin = ({
     eventBus,
     initOptions
 }: {
@@ -80,5 +80,3 @@ const ErrorPlugin = ({
 
     initPlugin()
 }
-
-export default ErrorPlugin

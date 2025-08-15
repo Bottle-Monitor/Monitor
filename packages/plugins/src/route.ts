@@ -5,14 +5,14 @@ import {
     USER
 } from '@bottle-monitor/types'
 
-const RoutePlugin = ({
+export const RoutePlugin = ({
     eventBus,
     initOptions
 }: {
     eventBus: EventBusReturn
     initOptions: InitOptions
 }) => {
-    const handleNormalHistory = () => {
+    const captureHistoryRoute = () => {
         // 重写 pushState
         const rowPush = history.pushState
         history.pushState = (...args) => {
@@ -33,22 +33,14 @@ const RoutePlugin = ({
                 url: location.href
             })
         }
-    }
 
-    // SPA 路由跳转不触发此事件，前进后退才会
-    const handleSPAHistory = () => {
-        window.addEventListener('popstate', () => {
+        window.addEventListener('popstate', (e: PopStateEvent) => {
             eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
                 type: USER.HISTORY_ROUTE,
                 method: 'popstate',
-                url: location.href
+                state: e.state
             })
         })
-    }
-
-    const captureHistoryRoute = () => {
-        handleNormalHistory()
-        handleSPAHistory()
     }
 
     /**
@@ -56,14 +48,15 @@ const RoutePlugin = ({
      * 1. hash 改变了 history 也会监听到
      * 2. 跳转到别的页面，整个界面刷新后不知道收到消息没
      * 3. 不知道从哪里跳到哪里去了
-     * 
+     *
      * 1. 对于 errorPlugin, 有些静默选项未生效
      */
     const captureHashRoute = () => {
-        window.addEventListener('hashchange', () => {
+        window.addEventListener('hashchange', (e: HashChangeEvent) => {
             eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
                 type: USER.HASH_ROUTE,
-                url: location.href
+                from: e.oldURL,
+                to: e.newURL
             })
         })
     }
@@ -77,5 +70,3 @@ const RoutePlugin = ({
 
     initPlugin()
 }
-
-export default RoutePlugin

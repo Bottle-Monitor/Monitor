@@ -1,5 +1,5 @@
 import { TrackerPlugin } from "@bottle-monitor/types"
-import Tracker from "./tracker"
+import Tracker from "./src/tracker"
 import { InitOptions } from "@bottle-monitor/types"
 
 // 导出初始化函数, 把实例塞到 window 里

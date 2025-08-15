@@ -9,8 +9,8 @@ import EventBus from './eventBus'
 import Transport from './transport'
 import {
     ErrorPlugin,
-    RoutePlugin,
-    WebVitalsPlugin
+    WebVitalsPlugin,
+    RoutePlugin
 } from '@bottle-monitor/plugins'
 
 /**
@@ -32,8 +32,14 @@ const Tracker = () => {
 
     const init = (initOptions: InitOptions) => {
         eventBus = EventBus()
-        transport = Transport(initOptions.dsnURL) as TransportReturn
-        transport.initBreadcrumb(initOptions.breadcrumb || [])
+        const { dsnURL, beroreTransport, beforePushBreadcrumb, breadcrumbs } =
+            initOptions
+        transport = Transport(
+            dsnURL,
+            beroreTransport,
+            beforePushBreadcrumb
+        ) as TransportReturn
+        transport.initBreadcrumb(breadcrumbs || [])
         eventBus.on('bottle-monitor:transport', handleTransport)
 
         // 初始化插件

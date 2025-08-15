@@ -6,7 +6,9 @@ export interface Breadcrumb {
     capacity: number
     uploadInterval?: number
     lastUpload?: number
-    queue: TransportData[]
+    queue: TransportData[],
+    perBeforePushBreadcrumb?: (data: any) => any
+    perBeroreTransport?: (data: any) => any
 }
 
 export interface TransportReturn {
