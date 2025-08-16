@@ -42,6 +42,8 @@ const Tracker = () => {
         transport.initBreadcrumb(breadcrumbs || [])
         eventBus.on('bottle-monitor:transport', handleTransport)
 
+        // TODO: 设置采集率，只上报部分用户的数据
+
         // 初始化插件
         ErrorPlugin({
             eventBus,

@@ -17,7 +17,9 @@ export const WebVitalsPlugin = ({
     const DEFAULT_STATIC_TYPES = ['script', 'link', 'img', 'css']
     const DEFAULT_DYNAMIC_TYPES = ['beacon', 'fetch', 'xmlhttprequest']
 
-    // 首次内容绘制
+    /**
+     * CORE WEB_VITALS
+     */
     const emitFCP = (entry: PerformanceEntry) => {
         if (entry.name === 'first-paint') return
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
@@ -86,11 +88,9 @@ export const WebVitalsPlugin = ({
         })
     }
 
-    window.addEventListener('load', () => {
-        lastLCP && emitLCP(lastLCP)
-        getResourceCacheHitRate()
-    })
-
+    /**
+     * TTFB
+     */
     // 用户发起请求 (requestStart) 到 收到第一个字节响应 (responseStart) 之间的时间
     // 兼容 SPA
     const getTTFB = () => {
@@ -121,6 +121,9 @@ export const WebVitalsPlugin = ({
         observer.observe({ type: 'navigation', buffered: true })
     }
 
+    /**
+     * RESOURCE
+     */
     const isCached = (r: PerformanceResourceTiming) => {
         // from disk/memory cache
         if (r.transferSize === 0 && r.encodedBodySize > 0) return true
@@ -135,12 +138,10 @@ export const WebVitalsPlugin = ({
         return false
     }
 
-    // 默认只计算静态数据，可选默认动态，支持自定义导入 initiatorType
     const getResourceCacheHitRate = (
         dynamic: boolean = false,
         customResourceTypes: string[] = []
     ) => {
-        // Use the buffered option to access entries from before the observer creation.
         const resources = performance.getEntriesByType(
             'resource'
         ) as PerformanceResourceTiming[]
@@ -157,10 +158,30 @@ export const WebVitalsPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
             category: CATEGORY.VITALS,
             type: VITALS.Resource,
-            entryName: 'resource', // entryType
+            entryName: 'resource',
             value: resources.length ? cached.length / resources.length : 0
         })
     }
+
+    /**
+     * INP
+     */
+    const getINP = () => {}
+
+    /**
+     * FPS
+     */
+    const getFPS = () => {}
+
+    /**
+     * FSP
+     */
+    const getFSP = () => {}
+
+    window.addEventListener('load', () => {
+        lastLCP && emitLCP(lastLCP)
+        getResourceCacheHitRate()
+    })
 
     const getWebVitals = (collectTarget: string[]) => {
         getTTFB()
