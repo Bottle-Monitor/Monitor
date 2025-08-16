@@ -15,22 +15,14 @@ export function Layout() {
             setDataList([dataList, JSON.parse(e.data)])
         }
 
-        setTimeout(() => {
-            const CLSBlock = document.querySelector('.cls-block')
-            if (CLSBlock) {
-                const img = new Image()
-                img.src = 'https://picsum.photos/50/100'
-                CLSBlock.appendChild(img)
-            }
-        }, 300)
-        setTimeout(() => {
-            const CLSBlock = document.querySelector('.cls-block')
-            if (CLSBlock) {
-                const img = new Image()
-                img.src = 'https://picsum.photos/50/100'
-                CLSBlock.appendChild(img)
-            }
-        }, 400)
+        // setTimeout(() => {
+        //     const CLSBlock = document.querySelector('.cls-block')
+        //     if (CLSBlock) {
+        //         const img = new Image()
+        //         img.src = 'https://picsum.photos/50/100'
+        //         CLSBlock.appendChild(img)
+        //     }
+        // }, 300)
     }, [])
 
     /* 相对路径才会代理 */
