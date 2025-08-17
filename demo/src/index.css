@@ -39,7 +39,7 @@ ul {
 li {
   width: 100%;
   white-space: wrap;
-  word-break: 'break-word';
+  word-break: break-word;
 }
 
 body {

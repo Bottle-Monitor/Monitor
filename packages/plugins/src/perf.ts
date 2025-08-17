@@ -171,12 +171,62 @@ export const WebVitalsPlugin = ({
     /**
      * FPS
      */
-    const getFPS = () => {}
+    const getFPS = () => {
+        let lastTime = performance.now()
+        let frameCount = 0
+        console.log('lastTime: ', lastTime)
+
+        const loop = (now: number) => {
+            frameCount++
+
+            if (now - lastTime >= 1000) {
+                const FPS = Math.round((frameCount * 1000) / (now - lastTime))
+
+                eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
+                    category: CATEGORY.VITALS,
+                    type: VITALS.FPS,
+                    entryName: 'FPS',
+                    value: FPS,
+                    timestamp: performance.now()
+                })
+
+                console.log('FPS: ', FPS)
+
+                frameCount = 0
+                lastTime = now
+            }
+
+            requestAnimationFrame(loop)
+        }
+
+        requestAnimationFrame(loop)
+    }
 
     /**
      * FSP
      */
     const getFSP = () => {}
+
+    /**
+     * LONGTASK
+     */
+    const getLongTask = () => {
+        const observer = new PerformanceObserver((entryList) => {
+            entryList.getEntries().forEach((entry) => {
+                eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
+                    category: CATEGORY.VITALS,
+                    type: VITALS.LONGTASK,
+                    entryName: 'longtask',
+                    entry
+                })
+            })
+        })
+
+        observer.observe({
+            type: 'longtask',
+            buffered: true
+        })
+    }
 
     window.addEventListener('load', () => {
         lastLCP && emitLCP(lastLCP)
@@ -195,7 +245,9 @@ export const WebVitalsPlugin = ({
 
     const initPlugin = () => {
         const collectTarget: string[] = []
-        getWebVitals(collectTarget)
+        // getWebVitals(collectTarget)
+        // getLongTask()
+        // getFPS()
     }
 
     initPlugin()

@@ -19,6 +19,7 @@ export enum VITALS {
     FSP = 'FSP',
     LCP = 'LCP',
     TTFB = 'TTFB',
+    LONGTASK = 'longtask',
     Resource = 'resource'
 }
 

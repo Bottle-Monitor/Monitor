@@ -9,11 +9,23 @@ export function Layout() {
     //     console.log('beforeTransport: ', data)
     // }
 
+    const longTask = () => {
+        const timer = setInterval(() => {
+            for (let i = 0; i < 10000000; i++) {
+                Date.now()
+            }
+            clearInterval(timer)
+            console.log('long task out of time')
+        }, 5)
+    }
+
     useEffect(() => {
         const eventSource = new EventSource('/api/data')
         eventSource.onmessage = (e) => {
-            setDataList([dataList, JSON.parse(e.data)])
+            setDataList(prev => [...prev, JSON.parse(e.data)])
         }
+
+        longTask()
 
         // setTimeout(() => {
         //     const CLSBlock = document.querySelector('.cls-block')
@@ -88,7 +100,14 @@ export function Layout() {
                     whiteSpace: 'wrap'
                 }}
             >
-                <ul style={{ padding: '0', margin: 0, listStyle: 'inside', wordBreak: 'break-word' }}>
+                <ul
+                    style={{
+                        padding: '0',
+                        margin: 0,
+                        listStyle: 'inside',
+                        wordBreak: 'break-word'
+                    }}
+                >
                     {dataList.map((item, index) => (
                         <li key={index}>{item}</li>
                     ))}
