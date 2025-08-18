@@ -19,6 +19,11 @@ export function Layout() {
         }, 5)
     }
 
+    const [doms, setDoms] = useState<number[]>([])
+    const repaint = () => {
+        setDoms([...doms, 1])
+    }
+
     useEffect(() => {
         const eventSource = new EventSource('/api/data')
         eventSource.onmessage = (e) => {
@@ -38,7 +43,7 @@ export function Layout() {
     }, [])
 
     /* 相对路径才会代理 */
-    const bottleMonitor = bottleMonitorInit({
+    bottleMonitorInit({
         userId: '12',
         dsnURL: '/api/report',
         breadcrumbs: [
@@ -113,6 +118,14 @@ export function Layout() {
                     ))}
                 </ul>
             </div>
+            <button className="repaint" onClick={repaint}>add DOM</button>
+            <ul className="doms" style={{
+                border: '1px solid #bebe'
+            }}>
+                {
+                    doms.map((dom, index) => <li key={index}>{dom}</li>)
+                }
+            </ul>
             <NavLink to="/why">To Why</NavLink>
             <hr />
             <NavLink to="/hello">To Hello</NavLink>

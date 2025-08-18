@@ -166,40 +166,73 @@ export const WebVitalsPlugin = ({
     /**
      * INP
      */
-    const getINP = () => {}
+    function getINP() {
+        let interactions: number[] = []
+        let INP = 0
 
-    /**
-     * FPS
-     */
-    const getFPS = () => {
-        let lastTime = performance.now()
-        let frameCount = 0
-        console.log('lastTime: ', lastTime)
+        const observer = new PerformanceObserver((entryList) => {
+            entryList.getEntries().forEach((entry) => {
+                if (
+                    [
+                        'click',
+                        'dblclick',
+                        'keydown',
+                        'keyup',
+                        'mousedown',
+                        'mouseup',
+                        'pointerdown',
+                        'pointerup',
+                        'pointercancel',
+                        'input',
+                        'change',
+                        'beforeinput'
+                    ].includes(entry.name)
+                ) {
+                    interactions.push(entry.duration)
+                }
+            })
+        })
 
-        const loop = (now: number) => {
-            frameCount++
+        observer.observe({
+            type: 'event',
+            // @ts-ignore
+            durationThreshold: 16,
+            buffered: true
+        })
 
-            if (now - lastTime >= 1000) {
-                const FPS = Math.round((frameCount * 1000) / (now - lastTime))
+        const analyse = () => {
+            if (interactions.length === 0) return
 
-                eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
-                    category: CATEGORY.VITALS,
-                    type: VITALS.FPS,
-                    entryName: 'FPS',
-                    value: FPS,
-                    timestamp: performance.now()
-                })
-
-                console.log('FPS: ', FPS)
-
-                frameCount = 0
-                lastTime = now
+            if (interactions.length < 50) {
+                INP = Math.max(...interactions)
+            } else {
+                const filtered: number[] = []
+                for (let i = 0; i < interactions.length; i += 50) {
+                    const group = interactions.slice(i, i + 50)
+                    if (group.length === 0) continue
+                    const worst = Math.max(...group)
+                    group.splice(group.indexOf(worst), 1)
+                    filtered.push(...group)
+                }
+                const sorted = [...filtered].sort((a, b) => a - b)
+                INP = sorted[Math.floor(sorted.length * 0.98)]
             }
 
-            requestAnimationFrame(loop)
+            console.log('INP value:', INP)
+
+            eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
+                category: CATEGORY.VITALS,
+                type: VITALS.INP,
+                entryName: 'INP',
+                value: INP
+            })
         }
 
-        requestAnimationFrame(loop)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') analyse()
+        })
+        window.addEventListener('beforeunload', analyse)
+        window.addEventListener('pagehide', analyse)
     }
 
     /**
@@ -248,6 +281,7 @@ export const WebVitalsPlugin = ({
         // getWebVitals(collectTarget)
         // getLongTask()
         // getFPS()
+        getINP()
     }
 
     initPlugin()
