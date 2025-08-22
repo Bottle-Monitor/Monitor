@@ -236,9 +236,91 @@ export const WebVitalsPlugin = ({
     }
 
     /**
+     * 获取关键元素绘制时间
+     * PerformanceObserver + entryType = 'element' + elementtiming. 局限于 img、p
+     */
+    const isInScreen = (dom: HTMLElement) => {
+        const { top, left, bottom, right } = dom.getBoundingClientRect()
+        const viewportHeight = window.innerHeight
+        const viewportWidth = window.innerWidth
+        return (
+            top < viewportHeight &&
+            bottom > 0 &&
+            left < viewportWidth &&
+            right > 0
+        )
+    }
+
+    const getPaintTime = (targets: string[]) => {
+        let FSP = performance.now()
+        targets.forEach((selector) => {
+            const observer = new MutationObserver((mutationList) => {
+                mutationList.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (!(node instanceof HTMLElement)) return
+                        if (
+                            (node.matches(selector) ||
+                                node.querySelector(selector)) &&
+                            isInScreen(node)
+                        ) {
+                            console.log('元素更新: ', selector, node)
+                            FSP = performance.now()
+                            // observer.disconnect()
+                        }
+                    })
+                })
+            })
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true,
+                attributes: true
+            })
+        })
+    }
+
+    /**
      * FSP
      */
-    const getFSP = () => {}
+    function getFSP(selectors: string[]) {
+        const results: Record<string, number> = {}
+        let remain = selectors.length
+
+        selectors.forEach((selector) => {
+            const el = document.querySelector(selector)
+            if (!el) {
+                remain--
+                return
+            }
+
+            const io = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        requestAnimationFrame(() => {
+                            const time = performance.now()
+                            results[selector] = time
+                            remain--
+                            observer.disconnect()
+
+                            if (remain === 0) {
+                                eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
+                                    category: CATEGORY.VITALS,
+                                    type: VITALS.FSP,
+                                    value: Math.max(...Object.values(results)),
+                                    extra: {
+                                        LCP: ''
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+
+            io.observe(el)
+        })
+    }
 
     /**
      * LONGTASK
@@ -281,7 +363,9 @@ export const WebVitalsPlugin = ({
         // getWebVitals(collectTarget)
         // getLongTask()
         // getFPS()
-        getINP()
+        // getINP()
+        // getPaintTime(['.data-block'])
+        setTimeout(() => getFSP(['.data-block']))
     }
 
     initPlugin()
