@@ -7,9 +7,11 @@
     "scripts": {
         "build": "rollup -c",
         "build:all": "pnpm -r run build",
+        "build:docs": "pnpm --filter docs run build",
         "lint:all": "pnpm -r run lint",
         "demo": "pnpm --filter demo run dev",
-        "server": "pnpm --filter server run dev"
+        "server": "pnpm --filter server run dev",
+        "docs": "pnpm --filter docs run dev"
     },
     "main": "src/index.ts",
     "type": "module",

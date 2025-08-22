@@ -1,0 +1,17 @@
+{
+    "name": "docs",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "dev": "vitepress dev",
+        "build": "vitepress build",
+        "preview": "vitepress preview"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "Docs for Bottle-Monitor.",
+    "devDependencies": {
+        "vitepress": "2.0.0-alpha.12"
+    }
+}

@@ -126,6 +126,7 @@ export function Layout() {
                     doms.map((dom, index) => <li key={index}>{dom}</li>)
                 }
             </ul>
+            <img src="./vite.svg" alt="" {...{ elementtiming: "big-banner" }}/>
             <NavLink to="/why">To Why</NavLink>
             <hr />
             <NavLink to="/hello">To Hello</NavLink>
