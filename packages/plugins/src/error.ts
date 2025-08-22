@@ -4,6 +4,7 @@ import {
     EventBusReturn,
     InitOptions
 } from '@bottle-monitor/types'
+import { getDate } from '@bottle-monitor/utils'
 import ErrorStackParser from 'error-stack-parser'
 
 // TODO: 后续可以细化为只传递所需插件的选项，将 initOptions 拆解为按插件区分的部分
@@ -19,6 +20,7 @@ export const ErrorPlugin = ({
             eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
                 category: CATEGORY.ABNORMAL,
                 type: ABNORMAL.UNHANDLEDREJECTION,
+                emitTime: getDate(new Date()),
                 message: ev.reason,
                 stack: ErrorStackParser.parse(ev.reason.stack)
             })
@@ -34,6 +36,7 @@ export const ErrorPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
             category: CATEGORY.ABNORMAL,
             type: ABNORMAL.CODE,
+            emitTime: getDate(new Date()),
             message: e.error.message,
             stack: ErrorStackParser.parse(e.error.stack),
             filename: e.filename,
@@ -52,6 +55,7 @@ export const ErrorPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.ABNORMAL, {
             category: CATEGORY.ABNORMAL,
             type: ABNORMAL.RESOURCE,
+            emitTime: getDate(new Date()),
             message: JSON.stringify({
                 resourceType: target.tagName,
                 resourceURL:

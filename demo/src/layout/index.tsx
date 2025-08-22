@@ -5,7 +5,7 @@ import { Outlet, NavLink } from 'react-router-dom'
 export function Layout() {
     const [dataList, setDataList] = useState<string[]>([])
 
-    // const beroreTransport = (data: any) => {
+    // const beforeTransport = (data: any) => {
     //     console.log('beforeTransport: ', data)
     // }
 
@@ -54,17 +54,17 @@ export function Layout() {
             //     // },
             //     capacity: 1
             // },
-            {
-                breadcrumbType: 'vitals',
-                capacity: 1
-            },
             // {
-            //     breadcrumbType: 'user',
-            //     capacity: 2
-            // }
+            //     breadcrumbType: 'vitals',
+            //     capacity: 1
+            // },
+            {
+                breadcrumbType: 'user',
+                capacity: 2
+            }
         ]
         // hook: {
-        //     beroreTransport
+        //     beforeTransport
         // }
         // silent: {
         //   unhandledrejection: true,

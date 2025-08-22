@@ -5,14 +5,14 @@ import {
     TransportData,
     TransportReturn
 } from '@bottle-monitor/types'
-import { runHook, useWebStorage } from '@bottle-monitor/utils'
+import { getDate, runHook, useWebStorage } from '@bottle-monitor/utils'
 
 /**
  * 事件上报
  */
 const Transport = (
     dsnURL: string,
-    beroreTransport?: (data: any) => any,
+    beforeTransport?: (data: any) => any,
     beforePushBreadcrumb?: (data: any) => any
 ): TransportReturn => {
     const QUEUE_KEY = 'bottle-monitor'
@@ -94,8 +94,12 @@ const Transport = (
         })
     }
 
+    const formatData = () => {
+
+    }
+
     const flush = (breadcrumbType: BreadcrumbType, full?: boolean) => {
-        const { queue, uploadInterval, lastUpload, perBeroreTransport } =
+        const { queue, uploadInterval, lastUpload, perBeforeTransport } =
             breadcrumbs[breadcrumbType]
         if (queue.length === 0) return
         if (
@@ -105,12 +109,17 @@ const Transport = (
         )
             return
 
+        const sendData = {
+            flushTime: getDate(new Date()),
+
+        }
+
         if (!sendByBeacon(queue)) {
             sendByFetch(queue)
         }
 
-        runHook(perBeroreTransport, queue)
-        runHook(beroreTransport, queue)
+        runHook(perBeforeTransport, queue)
+        runHook(beforeTransport, queue)
 
         console.log('data flushed!', queue)
         // 清空相应队列, 更新发送时间 TODO: web-vitals 可以 idle 了再发，优先级不那么高

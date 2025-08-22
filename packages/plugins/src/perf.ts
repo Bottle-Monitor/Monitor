@@ -5,6 +5,7 @@ import {
     LayoutShift,
     VITALS
 } from '@bottle-monitor/types'
+import { getDate } from '@bottle-monitor/utils'
 
 export const WebVitalsPlugin = ({
     eventBus,
@@ -25,6 +26,7 @@ export const WebVitalsPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
             category: CATEGORY.VITALS,
             type: VITALS.FCP,
+            emitTime: getDate(new Date()),
             entryName: 'first-contentful-paint',
             entry
         })
@@ -34,6 +36,7 @@ export const WebVitalsPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
             category: CATEGORY.VITALS,
             type: VITALS.LCP,
+            emitTime: getDate(new Date()),
             entryName: 'largest-contentful-paint',
             entry
         })
@@ -43,6 +46,7 @@ export const WebVitalsPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
             category: CATEGORY.VITALS,
             type: VITALS.FID,
+            emitTime: getDate(new Date()),
             entryName: 'first-input',
             entry
         })
@@ -52,6 +56,7 @@ export const WebVitalsPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
             category: CATEGORY.VITALS,
             type: VITALS.CLS,
+            emitTime: getDate(new Date()),
             entryName: 'layout-shift',
             entry
         })
@@ -106,6 +111,7 @@ export const WebVitalsPlugin = ({
                 eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
                     category: CATEGORY.VITALS,
                     type: VITALS.TTFB,
+                    emitTime: getDate(new Date()),
                     entryName: 'navigation', // entryType
                     value,
                     extra: {
@@ -158,6 +164,7 @@ export const WebVitalsPlugin = ({
         eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
             category: CATEGORY.VITALS,
             type: VITALS.Resource,
+            emitTime: getDate(new Date()),
             entryName: 'resource',
             value: resources.length ? cached.length / resources.length : 0
         })
@@ -223,6 +230,7 @@ export const WebVitalsPlugin = ({
             eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
                 category: CATEGORY.VITALS,
                 type: VITALS.INP,
+                emitTime: getDate(new Date()),
                 entryName: 'INP',
                 value: INP
             })
@@ -304,14 +312,21 @@ export const WebVitalsPlugin = ({
                             observer.disconnect()
 
                             if (remain === 0) {
-                                eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
-                                    category: CATEGORY.VITALS,
-                                    type: VITALS.FSP,
-                                    value: Math.max(...Object.values(results)),
-                                    extra: {
-                                        LCP: ''
+                                eventBus.emit(
+                                    'bottle-monitor:transport',
+                                    CATEGORY.VITALS,
+                                    {
+                                        category: CATEGORY.VITALS,
+                                        type: VITALS.FSP,
+                                        emitTime: getDate(new Date()),
+                                        value: Math.max(
+                                            ...Object.values(results)
+                                        ),
+                                        extra: {
+                                            LCP: ''
+                                        }
                                     }
-                                })
+                                )
                             }
                         })
                     }
@@ -331,6 +346,7 @@ export const WebVitalsPlugin = ({
                 eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
                     category: CATEGORY.VITALS,
                     type: VITALS.LONGTASK,
+                    emitTime: getDate(new Date()),
                     entryName: 'longtask',
                     entry
                 })

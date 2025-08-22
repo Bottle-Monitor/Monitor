@@ -48,7 +48,7 @@ export interface BreadcrumbOption {
     capacity: number // 最大存储量，1 为立即上报
     uploadInterval?: number // 定时上报间隔
     perBeforePushBreadcrumb?: (data: any) => any // 不同队列的 hook
-    perBeroreTransport?: (data: any) => any
+    perBeforeTransport?: (data: any) => any
 }
 export type BreadcrumbOptions = BreadcrumbOption[]
 
@@ -90,7 +90,7 @@ export type SilentOptions = Partial<{
  */
 export type Hook = Partial<{
     beforePushBreadcrumb: (data: any) => any // 行为栈添加前
-    beroreTransport: (data: any) => any // 数据上报前
+    beforeTransport: (data: any) => any // 数据上报前
 }>
 
 /**

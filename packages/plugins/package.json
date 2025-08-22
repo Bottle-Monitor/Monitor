@@ -11,6 +11,7 @@
     "@bottle-monitor/core": "workspace:*",
     "@bottle-monitor/types": "workspace:*",
     "@bottle-monitor/utils": "workspace:*",
-    "error-stack-parser": "^2.1.4"
+    "error-stack-parser": "^2.1.4",
+    "ua-parser-js": "^2.0.4"
   }
 }

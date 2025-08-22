@@ -8,7 +8,7 @@ export interface Breadcrumb {
     lastUpload?: number
     queue: TransportData[],
     perBeforePushBreadcrumb?: (data: any) => any
-    perBeroreTransport?: (data: any) => any
+    perBeforeTransport?: (data: any) => any
 }
 
 export interface TransportReturn {

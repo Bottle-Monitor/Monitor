@@ -10,7 +10,7 @@ import Transport from './transport'
 import {
     ErrorPlugin,
     WebVitalsPlugin,
-    RoutePlugin
+    UserPlugin
 } from '@bottle-monitor/plugins'
 
 /**
@@ -32,11 +32,11 @@ const Tracker = () => {
 
     const init = (initOptions: InitOptions) => {
         eventBus = EventBus()
-        const { dsnURL, beroreTransport, beforePushBreadcrumb, breadcrumbs } =
+        const { dsnURL, beforeTransport, beforePushBreadcrumb, breadcrumbs } =
             initOptions
         transport = Transport(
             dsnURL,
-            beroreTransport,
+            beforeTransport,
             beforePushBreadcrumb
         ) as TransportReturn
         transport.initBreadcrumb(breadcrumbs || [])
@@ -50,12 +50,12 @@ const Tracker = () => {
             initOptions
         })
 
-        RoutePlugin({
+        WebVitalsPlugin({
             eventBus,
             initOptions
         })
 
-        WebVitalsPlugin({
+        UserPlugin({
             eventBus,
             initOptions
         })
