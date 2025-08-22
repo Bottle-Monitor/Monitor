@@ -12,6 +12,7 @@
     "@bottle-monitor/types": "workspace:*",
     "@bottle-monitor/utils": "workspace:*",
     "error-stack-parser": "^2.1.4",
+    "nanoid": "^5.1.5",
     "ua-parser-js": "^2.0.4"
   }
 }

@@ -7,7 +7,8 @@ export enum USER {
     HASH_ROUTE = 'hash',
     DEVICE = 'device', // 设备信息
     XHR = 'xhr', // 网络请求
-    FETCH = 'fetch'
+    FETCH = 'fetch',
+    UNIQUEVIEW = 'uv' // 唯一访客数
 }
 
 export enum VITALS {
@@ -61,7 +62,7 @@ export type SilentOptions = Partial<{
     click: boolean
     hash: boolean
     history: boolean
-    
+
     /* ABNORMAL */
     abnormal: boolean
     error: boolean

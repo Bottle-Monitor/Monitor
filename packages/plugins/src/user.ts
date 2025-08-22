@@ -2,6 +2,7 @@ import { CATEGORY, EventBusReturn, USER } from '@bottle-monitor/types'
 import { InitOptions } from '@bottle-monitor/types'
 import { getDate } from '@bottle-monitor/utils'
 import { UAParser } from 'ua-parser-js'
+import { nanoid } from 'nanoid'
 
 export const UserPlugin = ({
     eventBus,
@@ -11,6 +12,7 @@ export const UserPlugin = ({
     initOptions: InitOptions
 }) => {
     let currentURL = location.href
+    const visitorId = initOptions.userId || nanoid()
 
     /**
      * DEVICE_INFO
@@ -31,6 +33,30 @@ export const UserPlugin = ({
             type: USER.DEVICE,
             emitTime: getDate(new Date()),
             deviceInfo
+        })
+    }
+
+    /**
+     * PAGEVIEW、ROUTEVIEW
+     */
+    const emitFirstPageView = () => {
+        eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+            category: CATEGORY.USER,
+            type: USER.HISTORY_ROUTE,
+            emitTime: getDate(new Date()),
+            method: 'pushState',
+            from: currentURL,
+            to: currentURL
+        })
+    }
+
+    const emitUniqueVisitor = () => {
+        eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+            category: CATEGORY.USER,
+            type: USER.UNIQUEVIEW, // 你自己加一个 PAGEVIEW 类型
+            url: location.href,
+            visitorId,
+            emitTime: getDate(new Date())
         })
     }
 
@@ -129,7 +155,7 @@ export const UserPlugin = ({
             return originalOpen.apply(this, [
                 method,
                 url,
-                async || true,
+                async ?? true,
                 username,
                 password
             ])
@@ -204,10 +230,11 @@ export const UserPlugin = ({
 
     const initPlugin = () => {
         const { hash, history } = initOptions.silent || {}
-
+        emitDeviceInfo()
+        emitFirstPageView()
+        emitUniqueVisitor()
         !hash && captureHashRoute()
         !history && captureHistoryRoute()
-        emitDeviceInfo()
         // captureUserClick()
         captureFetchRequest()
         captureXHRRequest()
