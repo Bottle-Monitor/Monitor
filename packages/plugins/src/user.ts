@@ -12,6 +12,9 @@ export const UserPlugin = ({
 }) => {
     let currentURL = location.href
 
+    /**
+     * DEVICE_INFO
+     */
     const emitDeviceInfo = () => {
         const uaMessage = UAParser()
         const deviceInfo = {
@@ -31,6 +34,9 @@ export const UserPlugin = ({
         })
     }
 
+    /**
+     * ROUTE
+     */
     const captureHistoryRoute = () => {
         // 重写 pushState
         const rowPush = history.pushState
@@ -94,12 +100,117 @@ export const UserPlugin = ({
         })
     }
 
+    /**
+     * REQUEST
+     */
+    const captureXHRRequest = () => {
+        const originalOpen = XMLHttpRequest.prototype.open
+
+        XMLHttpRequest.prototype.open = function (
+            this: XMLHttpRequest,
+            method: string,
+            url: string | URL,
+            async?: boolean,
+            username?: string | null,
+            password?: string | null
+        ): void {
+            const start = performance.now()
+            this.addEventListener('loadend', () => {
+                eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                    category: CATEGORY.USER,
+                    type: USER.XHR,
+                    emitTime: getDate(new Date()),
+                    method,
+                    url,
+                    status: this.status,
+                    duration: this.responseURL ? performance.now() - start : 0
+                })
+            })
+            return originalOpen.apply(this, [
+                method,
+                url,
+                async || true,
+                username,
+                password
+            ])
+        }
+    }
+
+    const captureFetchRequest = () => {
+        const originalFetch = window.fetch
+
+        window.fetch = async (...args: Parameters<typeof fetch>) => {
+            const start = performance.now()
+
+            try {
+                const res = await originalFetch(...args)
+
+                eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                    category: CATEGORY.USER,
+                    type: USER.FETCH,
+                    emitTime: getDate(new Date()),
+                    url: args[0],
+                    method: args[1]?.method || 'GET',
+                    status: res.status,
+                    duration: performance.now() - start
+                })
+
+                return res
+            } catch (err) {
+                eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                    category: CATEGORY.USER,
+                    type: USER.FETCH,
+                    emitTime: getDate(new Date()),
+                    url: args[0],
+                    method: args[1]?.method || 'GET',
+                    error: err,
+                    duration: performance.now() - start
+                })
+                throw err
+            }
+        }
+    }
+
+    /**
+     * CLICK
+     * TODO: 过滤容器，用户事件队列可以不上报，发生错误时可以上报用户轨迹
+     */
+    const captureUserClick = () => {
+        document.addEventListener('click', (e: MouseEvent) => {
+            const target = e.target as HTMLElement
+
+            console.log(target)
+            console.log(target.closest)
+
+            eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
+                category: CATEGORY.USER,
+                type: USER.CLICK,
+                emitTime: getDate(new Date()),
+                clickTarget: {
+                    tag: target.tagName,
+                    id: target.id,
+                    class: target.className,
+                    url: location.href
+                },
+                clickPosition: {
+                    x: e.clientX,
+                    y: e.clientY,
+                    pageX: e.pageX,
+                    pageY: e.pageY
+                }
+            })
+        })
+    }
+
     const initPlugin = () => {
         const { hash, history } = initOptions.silent || {}
 
         !hash && captureHashRoute()
         !history && captureHistoryRoute()
         emitDeviceInfo()
+        // captureUserClick()
+        captureFetchRequest()
+        captureXHRRequest()
     }
 
     initPlugin()
