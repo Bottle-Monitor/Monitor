@@ -3,16 +3,19 @@
 layout: home
 
 hero:
-  name: "Bottle-Monitor docs"
-  text: "Docs for Bottle-Monitor"
-  tagline: My great project tagline
+  name: "Bottle-Monitor"
+  text: "轻量级前端埋点"
+  tagline: Docs for Vottle-Monitor
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: 快速开始
+      link: /start
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: 架构与设计
+      link: /design
+    - theme: alt
+      text: 开发小记
+      link: /tips
 
 features:
   - title: Feature A

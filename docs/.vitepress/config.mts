@@ -10,13 +10,13 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Examples', link: '/markdown-examples' }
     ],
-
     sidebar: [
       {
-        text: 'Examples',
+        text: '目录',
         items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
+          { text: '快速开始', link: '/start' },
+          { text: '架构和设计', link: '/design' },
+          { text: '开发小记', link: '/tips' }
         ]
       }
     ],
