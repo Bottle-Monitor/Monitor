@@ -4,6 +4,8 @@
 A lightweight, extensible front-end monitoring SDK that supports event tracking, performance monitoring, and error capturing.
 Built-in multi-queue reporting ensures a stable and reliable monitoring system for your applications.
 
+[document in vercel](https://bottle-monitor.vercel.app/)
+
 ## ✨ Features
 - **Plugin-based architecture** – Hot-pluggable, compatible with Vue, Vite, and native integration, easily extended for new data types.
 
