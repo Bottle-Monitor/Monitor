@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {},
+  "bin": {
+    "bottle-copy-sw": "./scripts/copy-sw.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
