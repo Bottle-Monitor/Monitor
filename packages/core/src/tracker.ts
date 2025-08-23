@@ -28,6 +28,33 @@ const Tracker = () => {
     ) => {
         console.log('transport recived!')
         transport?.send(breadcrumbType, data)
+        navigator.serviceWorker.controller?.postMessage('hello')
+    }
+
+    const registerServiceWorker = async () => {
+        if ('ServiceWorker' in window) {
+            // 方案弃置
+            // const swURL = new URL('./sw.js', import.meta.url).href
+            const swURL = './sw.js'
+            try {
+                const registration = await navigator.serviceWorker.register(
+                    swURL
+                )
+                if (registration.installing) {
+                    console.log('installed!')
+                } else if (registration.waiting) {
+                    console.log('wating!')
+                } else if (registration.active) {
+                    console.log('active')
+                }
+
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    console.log('e: ', event.data)
+                })
+            } catch (error) {
+                console.error(`Registration failed with ${error}`)
+            }
+        }
     }
 
     const init = (initOptions: InitOptions) => {
@@ -43,6 +70,9 @@ const Tracker = () => {
         eventBus.on('bottle-monitor:transport', handleTransport)
 
         // TODO: 设置采集率，只上报部分用户的数据
+
+        // 注册 service worker
+        registerServiceWorker()
 
         // 初始化插件
         ErrorPlugin({

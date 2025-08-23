@@ -53,7 +53,7 @@ export const UserPlugin = ({
     const emitUniqueVisitor = () => {
         eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
             category: CATEGORY.USER,
-            type: USER.UNIQUEVIEW, // 你自己加一个 PAGEVIEW 类型
+            type: USER.UNIQUEVIEW,
             url: location.href,
             visitorId,
             emitTime: getDate(new Date())
