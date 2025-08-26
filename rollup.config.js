@@ -2,8 +2,10 @@ import typescript from 'rollup-plugin-typescript2'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 
+const inputFile = 'packages/core/index.ts'
+
 export default {
-  input: 'packages/index.ts',
+  input: inputFile,
   output: [
     {
       file: 'dist/index.js',

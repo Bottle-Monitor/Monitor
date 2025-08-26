@@ -2,7 +2,10 @@
   "name": "@bottle-monitor/types",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+      "build": "tsc -b && rollup -c",
+      "ts:check": "tsc --noEmit"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

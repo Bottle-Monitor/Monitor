@@ -2,7 +2,10 @@
   "name": "@bottle-monitor/core",
   "version": "1.0.0",
   "main": "index.ts",
-  "scripts": {},
+  "scripts": {
+      "build": "tsc -b && rollup -c",
+      "ts:check": "tsc --noEmit"
+  },
   "bin": {
     "bottle-copy-sw": "./scripts/copy-sw.js"
   },
