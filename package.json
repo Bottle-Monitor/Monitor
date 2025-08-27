@@ -5,13 +5,15 @@
     "private": false,
     "description": "A frontend monitor project",
     "scripts": {
-        "build": "rollup -c",
-        "build:all": "pnpm -r run build",
-        "build:docs": "pnpm --filter docs run build",
-        "lint:all": "pnpm -r run lint",
         "demo": "pnpm --filter demo run dev",
         "server": "pnpm --filter server run dev",
-        "docs": "pnpm --filter docs run dev"
+        "docs": "pnpm --filter docs run dev",
+        "build:pkg": "cross-env BUILD_MODE=package rollup -c",
+        "build:sdk": "rollup -c",
+        "build:docs": "pnpm --filter docs run build",
+        "build:demo": "pnpm --filter demo run build",
+        "build:server": "pnpm --filter server exec tsc -b",
+        "build:all": "pnpm run build:pkg && pnpm run build:sdk && pnpm run build:demo && pnpm run build:server && pnpm run build:docs"
     },
     "main": "src/index.ts",
     "type": "module",
@@ -25,6 +27,7 @@
     "devDependencies": {
         "@rollup/plugin-commonjs": "^28.0.6",
         "@rollup/plugin-node-resolve": "^16.0.1",
+        "cross-env": "^10.0.0",
         "rollup": "^4.45.1",
         "rollup-plugin-typescript2": "^0.36.0",
         "typescript": "^5.8.3"
