@@ -1,6 +1,6 @@
-import express from 'express'
 import cors from 'cors'
-import { dataRoute, reportRoute, codeRoute } from './routes/route'
+import express from 'express'
+import { codeRoute, dataRoute, reportRoute } from './routes/route'
 
 const app = express()
 app.use(cors())

@@ -1,28 +1,28 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "strict": true,
-    "noImplicitAny": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "lib": [
       "ESNext",
       "DOM",
       "DOM.Iterable"
     ],
-    "types": [
-      "node"
-    ],
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "paths": {
       "@bottle-monitor/*": [
         "packages/*/src"
       ]
-    }
+    },
+    "resolveJsonModule": true,
+    "types": [
+      "node"
+    ],
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   }
 }

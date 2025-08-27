@@ -1,5 +1,5 @@
-export * from './src/type'
+export * from './src/error'
 export * from './src/hook'
 export * from './src/localStorage'
-export * from './src/error'
 export * from './src/time'
+export * from './src/type'
