@@ -1,10 +1,7 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "dist",
-    "outDir": "dist"
-  },
-  "include": ["packages"],
-  "exclude": ["node_modules", "dist"]
+  "references": [
+    { "path": "./tsconfig.demo.json" },
+    { "path": "./tsconfig.server.json" }
+  ],
+  "files": []
 }
