@@ -10,5 +10,5 @@
  */
 
 export function getUniqueHash(str: string) {
-    return btoa(encodeURIComponent(str))
+  return btoa(encodeURIComponent(str))
 }

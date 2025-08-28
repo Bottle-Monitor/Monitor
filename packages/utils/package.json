@@ -1,13 +1,13 @@
 {
   "name": "@bottle-monitor/utils",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-      "build": "tsc -b && rollup -c",
-      "ts:check": "tsc --noEmit"
-  },
-  "keywords": [],
+  "description": "",
   "author": "",
   "license": "ISC",
-  "description": ""
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -b && rollup -c",
+    "ts:check": "tsc --noEmit"
+  }
 }

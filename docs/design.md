@@ -58,7 +58,7 @@ Web Vitals 插件专注于性能指标的采集，涵盖核心 Web 指标和自�
 
 **核心 Web 指标**
 - FCP (First Contentful Paint)：首次内容绘制时间
-- LCP (Largest Contentful Paint)：最大内容绘制时间  
+- LCP (Largest Contentful Paint)：最大内容绘制时间
 - CLS (Cumulative Layout Shift)：累积布局偏移
 - FID (First Input Delay)：首次输入延迟
 - INP (Interaction to Next Paint)：交互到下次绘制

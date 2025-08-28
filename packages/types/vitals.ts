@@ -1,4 +1,4 @@
 export interface LayoutShift extends PerformanceEntry {
-    value: number
-    hadRecentInput: boolean
+  value: number
+  hadRecentInput: boolean
 }

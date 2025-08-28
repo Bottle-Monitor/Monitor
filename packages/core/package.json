@@ -1,21 +1,21 @@
 {
   "name": "@bottle-monitor/core",
   "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
   "main": "index.ts",
-  "scripts": {
-      "build": "tsc -b && rollup -c",
-      "ts:check": "tsc --noEmit"
-  },
   "bin": {
     "bottle-copy-sw": "./scripts/copy-sw.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "scripts": {
+    "build": "tsc -b && rollup -c",
+    "ts:check": "tsc --noEmit"
+  },
   "dependencies": {
+    "@bottle-monitor/plugins": "workspace:*",
     "@bottle-monitor/types": "workspace:*",
-    "@bottle-monitor/utils": "workspace:*",
-    "@bottle-monitor/plugins": "workspace:*"
+    "@bottle-monitor/utils": "workspace:*"
   }
 }

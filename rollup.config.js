@@ -1,10 +1,10 @@
-import resolve from '@rollup/plugin-node-resolve'
+import fs from 'node:fs'
+import path, { dirname } from 'node:path'
+
+import { fileURLToPath } from 'node:url'
 import commonjs from '@rollup/plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve'
 import typescript from 'rollup-plugin-typescript2'
-import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
 
 // 获取当前文件路径和目录路径（ES模块兼容方式）
 const __filename = fileURLToPath(import.meta.url)
@@ -20,9 +20,9 @@ const baseConfig = {
     commonjs(),
     typescript({
       tsconfig: './tsconfig.json',
-      useTsconfigDeclarationDir: true
-    })
-  ]
+      useTsconfigDeclarationDir: true,
+    }),
+  ],
 }
 
 let exportConfig
@@ -36,7 +36,7 @@ if (!isPackageMode) {
         file: 'dist/index.js',
         format: 'umd',
         name: 'BottleMonitor',
-        sourcemap: true
+        sourcemap: true,
       },
       {
         file: 'dist/index.cjs.js',
@@ -49,26 +49,27 @@ if (!isPackageMode) {
         sourcemap: true,
       },
     ],
-    external: ['ua-parser-js']
+    external: ['ua-parser-js'],
   }
-} else {
+}
+else {
   const packagesDir = path.resolve(__dirname, 'packages')
   const packageConfigs = []
-  
+
   fs.readdirSync(packagesDir)
     .filter(dir => fs.statSync(path.join(packagesDir, dir)).isDirectory())
-    .forEach(pkgName => {
+    .forEach((pkgName) => {
       const pkgPath = path.join(packagesDir, pkgName)
-      
+
       let external = []
-      
+
       if (pkgName === 'core' || pkgName === 'plugins') {
         external = ['ua-parser-js']
         if (pkgName === 'plugins') {
           external.push('error-stack-parser', 'nanoid')
         }
       }
-      
+
       packageConfigs.push({
         ...baseConfig,
         input: path.join(pkgPath, 'index.ts'),
@@ -77,7 +78,7 @@ if (!isPackageMode) {
             file: path.join(pkgPath, 'dist', 'index.js'),
             format: 'umd',
             name: `BottleMonitor${pkgName.charAt(0).toUpperCase() + pkgName.slice(1)}`,
-            sourcemap: true
+            sourcemap: true,
           },
           {
             file: path.join(pkgPath, 'dist', 'index.cjs.js'),
@@ -90,10 +91,10 @@ if (!isPackageMode) {
             sourcemap: true,
           },
         ],
-        external
+        external,
       })
     })
-  
+
   exportConfig = packageConfigs
 }
 

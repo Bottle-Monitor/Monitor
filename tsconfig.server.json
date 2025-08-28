@@ -2,14 +2,14 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "target": "es2016",
-    "module": "commonjs",
     "lib": ["es2016"],
-    "outDir": "./server/dist",
     "rootDir": "./server/src",
+    "module": "commonjs",
+    "strict": true,
+    "outDir": "./server/dist",
     "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
     "skipLibCheck": true
   },
   "include": ["server/src/**/*"],

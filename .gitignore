@@ -12,13 +12,4 @@ pnpm-debug.log*
 
 pnpm-lock.yaml
 
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
 **dist**
