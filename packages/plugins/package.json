@@ -1,5 +1,6 @@
 {
   "name": "@bottle-monitor/plugins",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -15,5 +16,12 @@
     "error-stack-parser": "^2.1.4",
     "nanoid": "^5.1.5",
     "ua-parser-js": "^2.0.4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.45.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-typescript2": "^0.36.0"
   }
 }
