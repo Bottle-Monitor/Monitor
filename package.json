@@ -18,9 +18,8 @@
     "server": "pnpm --filter server run dev",
     "docs": "pnpm --filter docs run dev",
     "build:demo": "pnpm --filter demo run build",
-    "build:server": "pnpm --filter server exec tsc -b",
     "build:docs": "pnpm --filter docs run build",
-    "build:sdk": "pnpm --filter packages/core run build"
+    "build:sdk": "pnpm --filter core run build"
   },
   "dependencies": {
     "ua-parser-js": "^2.0.4"

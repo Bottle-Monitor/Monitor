@@ -20,5 +20,5 @@
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["demo/vite.config.ts"]
+  "include": ["apps/demo/vite.config.ts"]
 }
