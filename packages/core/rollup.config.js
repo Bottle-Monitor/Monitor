@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
+import copy from 'rollup-plugin-copy'
 import typescript from 'rollup-plugin-typescript2'
 
 export default {
@@ -28,6 +29,12 @@ export default {
     typescript({
       tsconfig: '../../tsconfig.sdk.json',
       useTsconfigDeclarationDir: true,
+    }),
+    copy({
+      targets: [
+        { src: '../../README.md', dest: 'sdk' },
+        { src: '../../README-zh.md', dest: 'sdk' },
+      ],
     }),
   ],
   external: [],
