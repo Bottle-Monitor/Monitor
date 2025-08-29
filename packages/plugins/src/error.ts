@@ -1,6 +1,6 @@
 import type {
+  AbnormalOptions,
   EventBusReturn,
-  InitOptions,
 } from '@bottle-monitor/types'
 import {
   ABNORMAL,
@@ -12,10 +12,10 @@ import ErrorStackParser from 'error-stack-parser'
 // TODO: 后续可以细化为只传递所需插件的选项，将 initOptions 拆解为按插件区分的部分
 export function ErrorPlugin({
   eventBus,
-  initOptions,
+  abnormalOptions,
 }: {
   eventBus: EventBusReturn
-  initOptions: InitOptions
+  abnormalOptions: AbnormalOptions
 }) {
   const capturePromise = () => {
     window.addEventListener('unhandledrejection', (ev): void => {
@@ -88,7 +88,7 @@ export function ErrorPlugin({
 
   const initPlugin = () => {
     const { resource, codeError, unhandledrejection, whitescreen }
-            = initOptions.silent || {}
+            = abnormalOptions || {}
 
     if (!resource || !codeError)
       captureError()

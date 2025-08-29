@@ -46,8 +46,8 @@ function Transport(dsnURL: string, beforeTransport?: (data: any) => any, beforeP
         uploadInterval,
         perBeforePushBreadcrumb,
       } = option
-      breadcrumbs[breadcrumbType] = {
-        capacity,
+      breadcrumbs[breadcrumbType!] = {
+        capacity: capacity!,
         breadcrumbId,
         uploadInterval,
         lastUpload: Date.now(),
@@ -56,7 +56,7 @@ function Transport(dsnURL: string, beforeTransport?: (data: any) => any, beforeP
       }
 
       if (uploadInterval) {
-        setInterval(() => flush(breadcrumbType), uploadInterval)
+        setInterval(() => flush(breadcrumbType!), uploadInterval)
       }
     })
   }

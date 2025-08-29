@@ -1,4 +1,4 @@
-import type { EventBusReturn, InitOptions } from '@bottle-monitor/types'
+import type { EventBusReturn, UserOptions } from '@bottle-monitor/types'
 import { CATEGORY, USER } from '@bottle-monitor/types'
 
 import { getDate } from '@bottle-monitor/utils'
@@ -7,13 +7,13 @@ import { UAParser } from 'ua-parser-js'
 
 export function UserPlugin({
   eventBus,
-  initOptions,
+  userOptions,
 }: {
   eventBus: EventBusReturn
-  initOptions: InitOptions
+  userOptions: UserOptions
 }) {
   let currentURL = location.href
-  const visitorId = initOptions.userId || nanoid()
+  const visitorId = nanoid()// TODO: 传个id
 
   /**
    * DEVICE_INFO
@@ -231,7 +231,7 @@ export function UserPlugin({
   }
 
   const initPlugin = () => {
-    const { hash, history } = initOptions.silent || {}
+    const { hash, history } = userOptions || {}
     emitDeviceInfo()
     emitFirstPageView()
     emitUniqueVisitor()

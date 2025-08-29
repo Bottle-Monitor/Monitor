@@ -1,9 +1,15 @@
 import type {
+  AbnormalOptions,
+  BreadcrumbOptions,
   BreadcrumbType,
   EventBusReturn,
   InitOptions,
+  Plugins,
+  PluginsFormatted,
   TransportData,
   TransportReturn,
+  UserOptions,
+  VitalsOptions,
 } from '@bottle-monitor/types'
 import {
   ErrorPlugin,
@@ -60,16 +66,27 @@ function Tracker() {
     }
   }
 
+  const collectBreadcrumbs = (plugins: Plugins | undefined) => {
+    if (!plugins) return []
+    const breadcrumbs: BreadcrumbOptions = []
+    plugins?.forEach((plugin) => {
+      breadcrumbs.push(plugin.breadcrumbs)
+    })
+
+    return breadcrumbs
+  }
+
   const init = (initOptions: InitOptions) => {
     eventBus = EventBus()
-    const { dsnURL, beforeTransport, beforePushBreadcrumb, breadcrumbs }
-            = initOptions
+    const { dsnURL, plugins, hooks } = initOptions
+    const { beforeTransport, beforePushBreadcrumb } = hooks || {}
     transport = Transport(
       dsnURL,
       beforeTransport,
       beforePushBreadcrumb,
     ) as TransportReturn
-    transport.initBreadcrumb(breadcrumbs || [])
+
+    transport?.initBreadcrumb(collectBreadcrumbs(plugins))
     eventBus.on('bottle-monitor:transport', handleTransport)
 
     // TODO: 设置采集率，只上报部分用户的数据
@@ -78,22 +95,29 @@ function Tracker() {
     registerServiceWorker()
 
     // 初始化插件
-    ErrorPlugin({
-      eventBus,
-      initOptions,
+    plugins?.forEach((plugin) => {
+      if (!eventBus) return
+      const {pluginName, ...options} = plugin
+      if (plugin.pluginName === 'user') {
+        UserPlugin({
+          eventBus,
+          userOptions: options as UserOptions,
+        })
+      }else if (plugin.pluginName === 'abnormal') {
+        ErrorPlugin({
+          eventBus,
+          abnormalOptions: options as AbnormalOptions,
+        })
+      }
+      else if (plugin.pluginName === 'vitals') {
+        WebVitalsPlugin({
+          eventBus,
+          vitalsOptions: options as VitalsOptions,
+        })
+      }else {
+        // TODO: CUSTOM PLUGIN
+      }
     })
-
-    WebVitalsPlugin({
-      eventBus,
-      initOptions,
-    })
-
-    UserPlugin({
-      eventBus,
-      initOptions,
-    })
-
-    // const silent = initOptions.silent
   }
 
   return {

@@ -1,13 +1,13 @@
-import { bottleMonitorInit } from '@bottle-monitor/core'
+import { bottleMonitorInit, userPlugin } from '@bottle-monitor/core'
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 
 export function Layout() {
   const [dataList, setDataList] = useState<string[]>([])
 
-  // const beforeTransport = (data: any) => {
-  //     console.log('beforeTransport: ', data)
-  // }
+  const beforeTransport = (data: unknown) => {
+    console.log('beforeTransport: ', data)
+  }
 
   const longTask = () => {
     const timer = setInterval(() => {
@@ -42,34 +42,23 @@ export function Layout() {
     // }, 300)
   }, [])
 
+  const userplugin = userPlugin({
+    options: {
+      click: true
+    },
+    breadcrumbs: {
+      
+    }
+  })
+
   /* 相对路径才会代理 */
   bottleMonitorInit({
     userId: '12',
     dsnURL: '/api/report',
-    breadcrumbs: [
-      // {
-      //     breadcrumbType: 'abnormal',
-      //     // perBeforePushBreadcrumb(data) {
-      //     //     console.log('before per push breadcrumb: ', data)
-      //     // },
-      //     capacity: 1
-      // },
-      // {
-      //     breadcrumbType: 'vitals',
-      //     capacity: 1
-      // },
-      {
-        breadcrumbType: 'user',
-        capacity: 2,
-      },
-    ],
-    // hook: {
-    //     beforeTransport
-    // }
-    // silent: {
-    //   unhandledrejection: true,
-    //   resource: true
-    // }
+    plugins: [userplugin],
+    hook: {
+      beforeTransport,
+    },
   })
 
   // Promise.reject({
