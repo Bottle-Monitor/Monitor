@@ -1,4 +1,6 @@
 **node_modules**
+**dist**
+**sdk**
 
 # local env files
 .env.local
@@ -12,4 +14,3 @@ pnpm-debug.log*
 
 pnpm-lock.yaml
 
-**dist**
