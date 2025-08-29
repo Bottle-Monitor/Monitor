@@ -3,30 +3,30 @@ import resolve from '@rollup/plugin-node-resolve'
 import typescript from 'rollup-plugin-typescript2'
 
 export default {
-  input: 'packages/index.ts',
+  input: './index.ts',
   output: [
     {
-      file: 'dist/index.js',
+      file: 'sdk/dist/index.js',
       format: 'umd',
       name: 'BottleMonitor',
-      sourcemap: true,
+      sourcemap: false,
     },
     {
-      file: 'dist/index.cjs.js',
+      file: 'sdk/dist/index.cjs.js',
       format: 'cjs',
-      sourcemap: true,
+      sourcemap: false,
     },
     {
-      file: 'dist/index.esm.js',
+      file: 'sdk/dist/index.esm.js',
       format: 'esm',
-      sourcemap: true,
+      sourcemap: false,
     },
   ],
   plugins: [
     resolve(),
     commonjs(),
     typescript({
-      tsconfig: './tsconfig.json',
+      tsconfig: '../../tsconfig.sdk.json',
       useTsconfigDeclarationDir: true,
     }),
   ],
