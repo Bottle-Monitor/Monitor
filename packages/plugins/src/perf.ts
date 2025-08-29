@@ -1,7 +1,7 @@
 import type {
   EventBusReturn,
-  InitOptions,
   LayoutShift,
+  VitalsOptions,
 } from '@bottle-monitor/types'
 import {
   CATEGORY,
@@ -11,9 +11,10 @@ import { getDate } from '@bottle-monitor/utils'
 
 export function WebVitalsPlugin({
   eventBus,
+  vitalsOptions,
 }: {
   eventBus: EventBusReturn
-  initOptions: InitOptions
+  vitalsOptions: VitalsOptions
 }) {
   let lastLCP: PerformanceEntry | null = null
   const DEFAULT_STATIC_TYPES = ['script', 'link', 'img', 'css']

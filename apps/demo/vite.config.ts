@@ -16,4 +16,7 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    exclude: ['nanoid'], // 避免 esbuild 预构建 nanoid
+  },
 })
