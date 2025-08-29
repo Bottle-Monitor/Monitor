@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "ESNext",
+    "target": "ESNext",
+    "baseUrl": "./",
+    "module": "ES2020",
     "moduleResolution": "node",
+    "paths": {},
+    "resolveJsonModule": true,
     "strict": true,
+    "outDir": "./sdk/dist",
+    "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["apps/server/**/*.ts"],
+  "include": ["packages/**/*"],
   "exclude": ["node_modules"]
 }

@@ -97,7 +97,7 @@ function Transport(dsnURL: string, beforeTransport?: (data: any) => any, beforeP
 
   }
 
-  const flush = (breadcrumbType: BreadcrumbType, full?: boolean) => {
+  function flush(breadcrumbType: BreadcrumbType, full?: boolean) {
     const { queue, uploadInterval, lastUpload, perBeforeTransport }
             = breadcrumbs[breadcrumbType]
     if (queue.length === 0)

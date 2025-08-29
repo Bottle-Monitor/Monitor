@@ -1,4 +1,9 @@
 **node_modules**
+**dist**
+**sdk**
+
+.vitepress
+.turbo
 
 # local env files
 .env.local
@@ -12,4 +17,3 @@ pnpm-debug.log*
 
 pnpm-lock.yaml
 
-**dist**

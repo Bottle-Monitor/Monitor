@@ -5,7 +5,6 @@ import type {
   EventBusReturn,
   InitOptions,
   Plugins,
-  PluginsFormatted,
   TransportData,
   TransportReturn,
   UserOptions,
@@ -20,7 +19,7 @@ import EventBus from './eventBus'
 import Transport from './transport'
 
 /**
- * 插件注册
+ * @description 插件注册
  */
 function Tracker() {
   // 初始化事件总线
@@ -67,7 +66,8 @@ function Tracker() {
   }
 
   const collectBreadcrumbs = (plugins: Plugins | undefined) => {
-    if (!plugins) return []
+    if (!plugins)
+      return []
     const breadcrumbs: BreadcrumbOptions = []
     plugins?.forEach((plugin) => {
       breadcrumbs.push(plugin.breadcrumbs)
@@ -96,14 +96,16 @@ function Tracker() {
 
     // 初始化插件
     plugins?.forEach((plugin) => {
-      if (!eventBus) return
-      const {pluginName, ...options} = plugin
+      if (!eventBus)
+        return
+      const { pluginName, ...options } = plugin
       if (plugin.pluginName === 'user') {
         UserPlugin({
           eventBus,
           userOptions: options as UserOptions,
         })
-      }else if (plugin.pluginName === 'abnormal') {
+      }
+      else if (plugin.pluginName === 'abnormal') {
         ErrorPlugin({
           eventBus,
           abnormalOptions: options as AbnormalOptions,
@@ -114,7 +116,8 @@ function Tracker() {
           eventBus,
           vitalsOptions: options as VitalsOptions,
         })
-      }else {
+      }
+      else {
         // TODO: CUSTOM PLUGIN
       }
     })

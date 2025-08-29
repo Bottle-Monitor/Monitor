@@ -1,22 +1,7 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "target": "ES2022",
-    "jsx": "react-jsx",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "moduleDetection": "force",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noEmit": true,
-    "verbatimModuleSyntax": true,
-    "erasableSyntaxOnly": true,
-    "noUncheckedSideEffectImports": true
-  },
-  "include": ["demo/src/**/*"],
-  "exclude": ["node_modules"]
+  "references": [
+    { "path": "./tsconfig.demo.app.json" },
+    { "path": "./tsconfig.demo.node.json" }
+  ],
+  "files": []
 }

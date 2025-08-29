@@ -1,5 +1,6 @@
 {
   "name": "@bottle-monitor/core",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -10,12 +11,18 @@
     "bottle-copy-sw": "./scripts/copy-sw.js"
   },
   "scripts": {
-    "build": "tsc -b && rollup -c",
-    "ts:check": "tsc --noEmit"
+    "build": "rollup -c"
   },
   "dependencies": {
     "@bottle-monitor/plugins": "workspace:*",
     "@bottle-monitor/types": "workspace:*",
     "@bottle-monitor/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.45.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-typescript2": "^0.36.0"
   }
 }

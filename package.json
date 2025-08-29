@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "private": false,
+  "packageManager": "pnpm@8.15.6",
   "description": "A frontend monitor project",
   "author": "Bottle414",
   "license": "ISC",
@@ -17,12 +18,8 @@
     "demo": "pnpm --filter demo run dev",
     "server": "pnpm --filter server run dev",
     "docs": "pnpm --filter docs run dev",
-    "build:pkg": "cross-env BUILD_MODE=package rollup -c",
-    "build:sdk": "rollup -c",
-    "build:docs": "pnpm --filter docs run build",
-    "build:demo": "pnpm --filter demo run build",
-    "build:server": "pnpm --filter server exec tsc -b",
-    "build:all": "pnpm run build:pkg && pnpm run build:sdk && pnpm run build:demo && pnpm run build:server && pnpm run build:docs"
+    "build:core": "turbo run build --filter=@bottle-monitor/core",
+    "build:demo": "turbo run build --filter=demo"
   },
   "dependencies": {
     "ua-parser-js": "^2.0.4"
@@ -31,15 +28,14 @@
     "@antfu/eslint-config": "^5.2.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@types/lodash": "^4.17.20",
     "chalk": "^5.6.0",
     "cross-env": "^10.0.0",
     "eslint": "^9.32.0",
     "lint-staged": "^16.1.5",
-    "rollup": "^4.45.1",
-    "rollup-plugin-typescript2": "^0.36.0",
+    "lodash": "^4.17.21",
     "simple-git-hooks": "^2.13.1",
+    "turbo": "^2.5.6",
     "typescript": "^5.8.3"
   },
   "simple-git-hooks": {
