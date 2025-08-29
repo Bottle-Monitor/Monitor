@@ -34,6 +34,7 @@ export default {
       targets: [
         { src: '../../README.md', dest: 'sdk' },
         { src: '../../README-zh.md', dest: 'sdk' },
+        { src: './package.json', dest: 'sdk' },
       ],
     }),
   ],
