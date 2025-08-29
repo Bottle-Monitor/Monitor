@@ -14,7 +14,7 @@ import EventBus from './eventBus'
 import Transport from './transport'
 
 /**
- * 插件注册
+ * @description 插件注册
  */
 function Tracker() {
   // 初始化事件总线
