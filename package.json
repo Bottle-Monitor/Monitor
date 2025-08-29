@@ -17,12 +17,9 @@
     "demo": "pnpm --filter demo run dev",
     "server": "pnpm --filter server run dev",
     "docs": "pnpm --filter docs run dev",
-    "build:pkg": "cross-env BUILD_MODE=package rollup -c",
-    "build:sdk": "rollup -c",
-    "build:docs": "pnpm --filter docs run build",
     "build:demo": "pnpm --filter demo run build",
     "build:server": "pnpm --filter server exec tsc -b",
-    "build:all": "pnpm run build:pkg && pnpm run build:sdk && pnpm run build:demo && pnpm run build:server && pnpm run build:docs"
+    "build:docs": "pnpm --filter docs run build"
   },
   "dependencies": {
     "ua-parser-js": "^2.0.4"

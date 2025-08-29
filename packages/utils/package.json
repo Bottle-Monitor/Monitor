@@ -7,7 +7,6 @@
   "keywords": [],
   "main": "index.js",
   "scripts": {
-    "build": "tsc -b && rollup -c",
-    "ts:check": "tsc --noEmit"
+    "build": "rollup -c"
   }
 }

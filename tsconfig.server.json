@@ -1,1 +1,12 @@
-{}
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["server/**/*.ts"],
+  "exclude": ["node_modules"]
+}
