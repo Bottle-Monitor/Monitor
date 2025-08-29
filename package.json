@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "private": false,
+  "packageManager": "pnpm@8.15.6",
   "description": "A frontend monitor project",
   "author": "Bottle414",
   "license": "ISC",
@@ -17,9 +18,8 @@
     "demo": "pnpm --filter demo run dev",
     "server": "pnpm --filter server run dev",
     "docs": "pnpm --filter docs run dev",
-    "build:demo": "pnpm --filter demo run build",
-    "build:docs": "pnpm --filter docs run build",
-    "build:sdk": "pnpm --filter core run build"
+    "build:core": "turbo run build --filter=@bottle-monitor/core",
+    "build:demo": "turbo run build --filter=demo"
   },
   "dependencies": {
     "ua-parser-js": "^2.0.4"
@@ -33,6 +33,7 @@
     "eslint": "^9.32.0",
     "lint-staged": "^16.1.5",
     "simple-git-hooks": "^2.13.1",
+    "turbo": "^2.5.6",
     "typescript": "^5.8.3"
   },
   "simple-git-hooks": {

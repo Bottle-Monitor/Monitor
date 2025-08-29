@@ -1,5 +1,6 @@
 {
   "name": "@bottle-monitor/utils",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -8,5 +9,12 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.45.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-typescript2": "^0.36.0"
   }
 }
