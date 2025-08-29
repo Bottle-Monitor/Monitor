@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
     "baseUrl": "./",
-    "module": "commonjs",
+    "module": "ES2020",
     "moduleResolution": "node",
     "paths": {},
     "resolveJsonModule": true,
     "strict": true,
-    "outDir": "./dist",
+    "outDir": "./sdk/dist",
     "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

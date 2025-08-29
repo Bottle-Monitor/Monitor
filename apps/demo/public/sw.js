@@ -13,7 +13,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request).catch(() => {
         // 缓存到 IndexedDB，待网络恢复再发
-        saveReport(event.request)
+        // saveReport(event.request)
         return new Response('cached', { status: 202 })
       }),
     )
@@ -22,7 +22,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('sync', (event) => {
   if (event.tag === 'retry-reports') {
-    event.waitUntil(retryReports())
+    // event.waitUntil(retryReports())
   }
 })
 

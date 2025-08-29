@@ -6,5 +6,6 @@ export default antfu({
     'no-console': 'off',
     'unused-imports/no-unused-vars': ['warn', { varsIgnorePattern: '^_' }],
     'node/prefer-global/process': 'off',
+    'no-restricted-globals': ['warn'],
   },
 })

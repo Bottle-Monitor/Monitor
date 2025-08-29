@@ -36,9 +36,9 @@ import {
   unref,
   watch,
   watchEffect
-} from "./chunk-TN74DCXI.js";
+} from "./chunk-EL3CV4QU.js";
 
-// ../node_modules/.pnpm/@vueuse+shared@13.7.0_vue@3.5.19_typescript@5.9.2_/node_modules/@vueuse/shared/index.mjs
+// ../node_modules/.pnpm/@vueuse+shared@13.8.0_vue@3.5.20_typescript@5.9.2_/node_modules/@vueuse/shared/index.mjs
 function computedEager(fn, options) {
   var _a;
   const result = shallowRef();
@@ -1572,7 +1572,7 @@ function whenever(source, cb, options) {
   return stop;
 }
 
-// ../node_modules/.pnpm/@vueuse+core@13.7.0_vue@3.5.19_typescript@5.9.2_/node_modules/@vueuse/core/index.mjs
+// ../node_modules/.pnpm/@vueuse+core@13.8.0_vue@3.5.20_typescript@5.9.2_/node_modules/@vueuse/core/index.mjs
 function computedAsync(evaluationCallback, initialState, optionsOrRef) {
   var _a;
   let options;
@@ -4789,7 +4789,10 @@ function useEventSource(url, events2 = [], options = {}) {
     withCredentials = false,
     immediate = true,
     autoConnect = true,
-    autoReconnect
+    autoReconnect,
+    serializer = {
+      read: (v) => v
+    }
   } = options;
   const close = () => {
     if (isClient && eventSource.value) {
@@ -4829,15 +4832,17 @@ function useEventSource(url, events2 = [], options = {}) {
       }
     };
     es.onmessage = (e) => {
+      var _a;
       event.value = null;
-      data.value = e.data;
+      data.value = (_a = serializer.read(e.data)) != null ? _a : null;
       lastEventId.value = e.lastEventId;
     };
     for (const event_name of events2) {
       useEventListener(es, event_name, (e) => {
+        var _a, _b;
         event.value = event_name;
-        data.value = e.data || null;
-        lastEventId.value = e.lastEventId || null;
+        data.value = (_a = serializer.read(e.data)) != null ? _a : null;
+        lastEventId.value = (_b = e.lastEventId) != null ? _b : null;
       }, { passive: true });
     }
   };
@@ -7198,7 +7203,7 @@ function usePointer(options = {}) {
     target = defaultWindow
   } = options;
   const isInside = shallowRef(false);
-  const state = ref(options.initialValue || {});
+  const state = shallowRef(options.initialValue || {});
   Object.assign(state.value, defaultState, state.value);
   const handler = (event) => {
     isInside.value = true;
@@ -7390,9 +7395,9 @@ function usePreferredContrast(options) {
 function usePreferredLanguages(options = {}) {
   const { window: window2 = defaultWindow } = options;
   if (!window2)
-    return ref(["en"]);
+    return shallowRef(["en"]);
   const navigator2 = window2.navigator;
-  const value = ref(navigator2.languages);
+  const value = shallowRef(navigator2.languages);
   useEventListener(window2, "languagechange", () => {
     value.value = navigator2.languages;
   }, { passive: true });

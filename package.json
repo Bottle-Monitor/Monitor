@@ -18,8 +18,8 @@
     "server": "pnpm --filter server run dev",
     "docs": "pnpm --filter docs run dev",
     "build:demo": "pnpm --filter demo run build",
-    "build:server": "pnpm --filter server exec tsc -b",
-    "build:docs": "pnpm --filter docs run build"
+    "build:docs": "pnpm --filter docs run build",
+    "build:sdk": "pnpm --filter core run build"
   },
   "dependencies": {
     "ua-parser-js": "^2.0.4"
@@ -28,14 +28,10 @@
     "@antfu/eslint-config": "^5.2.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-node-resolve": "^16.0.1",
     "chalk": "^5.6.0",
     "cross-env": "^10.0.0",
     "eslint": "^9.32.0",
     "lint-staged": "^16.1.5",
-    "rollup": "^4.45.1",
-    "rollup-plugin-typescript2": "^0.36.0",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^5.8.3"
   },
