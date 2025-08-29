@@ -11,7 +11,6 @@ import { getDate } from '@bottle-monitor/utils'
 
 export function WebVitalsPlugin({
   eventBus,
-  initOptions,
 }: {
   eventBus: EventBusReturn
   initOptions: InitOptions
@@ -208,7 +207,7 @@ export function WebVitalsPlugin({
 
     observer.observe({
       type: 'event',
-      // @ts-ignore
+      // @ts-expect-error 对象字面量只能指定已知属性，并且“durationThreshold”不在类型“PerformanceObserverInit”中。
       durationThreshold: 16,
       buffered: true,
     })
@@ -268,7 +267,6 @@ export function WebVitalsPlugin({
       && right > 0
     )
   }
-
   const getPaintTime = (targets: string[]) => {
     let FSP = performance.now()
     targets.forEach((selector) => {

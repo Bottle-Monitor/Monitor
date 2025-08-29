@@ -1,6 +1,6 @@
 import type { Req, Res } from '../types'
-import fs from 'node:fs'
-import path from 'node:path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import { SourceMapConsumer } from 'source-map'
 
 interface GeneratedPosition {

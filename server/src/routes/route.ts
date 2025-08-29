@@ -1,4 +1,4 @@
-import express from 'express'
+import * as express from 'express'
 import { handleCode } from '../controller/code'
 import { handleReport } from '../controller/report'
 import { createSSE } from '../controller/SSE'
