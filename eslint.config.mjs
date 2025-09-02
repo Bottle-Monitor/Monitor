@@ -17,5 +17,8 @@ export default antfu({
     // 放宽其他规则
     'no-unreachable-loop': 'warn',
     'no-unused-vars': 'warn',
+    // 放宽 new 和 eval 相关规则
+    'no-new': 'warn',
+    'no-eval': 'warn',
   },
 })
