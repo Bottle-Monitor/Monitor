@@ -1,42 +1,55 @@
 import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
-import copy from 'rollup-plugin-copy'
-import typescript from 'rollup-plugin-typescript2'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import terser from '@rollup/plugin-terser'
+import typescript from '@rollup/plugin-typescript'
+import { defineConfig } from 'rollup'
+import dts from 'rollup-plugin-dts'
 
-export default {
-  input: './index.ts',
-  output: [
-    {
-      file: 'dist/index.js',
-      format: 'umd',
-      name: 'BottleMonitor',
-      sourcemap: false,
-    },
-    {
-      file: 'dist/index.cjs.js',
-      format: 'cjs',
-      sourcemap: false,
-    },
-    {
-      file: 'dist/index.esm.js',
+const isProduction = process.env.NODE_ENV === 'production'
+
+export default defineConfig([
+  // 主构建
+  {
+    input: 'index.ts',
+    output: [
+      {
+        file: 'dist/index.js',
+        format: 'cjs',
+        sourcemap: true,
+      },
+      {
+        file: 'dist/index.esm.js',
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+    external: ['@bottle-monitor/types', '@bottle-monitor/utils'],
+    plugins: [
+      nodeResolve({
+        browser: true,
+        preferBuiltins: false,
+      }),
+      commonjs(),
+      typescript({
+        tsconfig: './tsconfig.json',
+        sourceMap: true,
+      }),
+      isProduction && terser({
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      }),
+    ].filter(Boolean),
+  },
+  // 类型定义构建
+  {
+    input: 'index.ts',
+    output: {
+      file: 'dist/index.d.ts',
       format: 'esm',
-      sourcemap: false,
     },
-  ],
-  plugins: [
-    resolve(),
-    commonjs(),
-    typescript({
-      tsconfig: '../../tsconfig.sdk.json',
-      useTsconfigDeclarationDir: true,
-    }),
-    copy({
-      targets: [
-        { src: '../../README.md', dest: 'dist' },
-        { src: '../../README-zh.md', dest: 'dist' },
-        { src: './package.json', dest: 'dist' },
-      ],
-    }),
-  ],
-  external: [],
-}
+    external: ['@bottle-monitor/types', '@bottle-monitor/utils'],
+    plugins: [dts()],
+  },
+])

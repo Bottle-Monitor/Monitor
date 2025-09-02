@@ -30,7 +30,6 @@ export function UserPlugin({
     }
 
     eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-      category: CATEGORY.USER,
       type: USER.DEVICE,
       emitTime: getDate(new Date()),
       deviceInfo,
@@ -42,7 +41,7 @@ export function UserPlugin({
    */
   const emitFirstPageView = () => {
     eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-      category: CATEGORY.USER,
+
       type: USER.HISTORY_ROUTE,
       emitTime: getDate(new Date()),
       method: 'pushState',
@@ -53,7 +52,7 @@ export function UserPlugin({
 
   const emitUniqueVisitor = () => {
     eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-      category: CATEGORY.USER,
+
       type: USER.UNIQUEVIEW,
       url: location.href,
       visitorId,
@@ -71,7 +70,7 @@ export function UserPlugin({
       const newURL = location.href
       rowPush.apply(history, args)
       eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-        category: CATEGORY.USER,
+
         type: USER.HISTORY_ROUTE,
         emitTime: getDate(new Date()),
         method: 'pushState',
@@ -86,7 +85,7 @@ export function UserPlugin({
       const newURL = location.href
       rowReplace.apply(history, args)
       eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-        category: CATEGORY.USER,
+
         type: USER.HASH_ROUTE,
         emitTime: getDate(new Date()),
         method: 'replaceState',
@@ -98,7 +97,7 @@ export function UserPlugin({
 
     window.addEventListener('popstate', (e: PopStateEvent) => {
       eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-        category: CATEGORY.USER,
+
         type: USER.HISTORY_ROUTE,
         emitTime: getDate(new Date()),
         method: 'popstate',
@@ -118,7 +117,7 @@ export function UserPlugin({
   const captureHashRoute = () => {
     window.addEventListener('hashchange', (e: HashChangeEvent) => {
       eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-        category: CATEGORY.USER,
+
         type: USER.HASH_ROUTE,
         emitTime: getDate(new Date()),
         from: e.oldURL,
@@ -144,7 +143,7 @@ export function UserPlugin({
       const start = performance.now()
       this.addEventListener('loadend', () => {
         eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-          category: CATEGORY.USER,
+
           type: USER.XHR,
           emitTime: getDate(new Date()),
           method,
@@ -173,7 +172,7 @@ export function UserPlugin({
         const res = await originalFetch(...args)
 
         eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-          category: CATEGORY.USER,
+
           type: USER.FETCH,
           emitTime: getDate(new Date()),
           url: args[0],
@@ -186,7 +185,7 @@ export function UserPlugin({
       }
       catch (err) {
         eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-          category: CATEGORY.USER,
+
           type: USER.FETCH,
           emitTime: getDate(new Date()),
           url: args[0],
@@ -203,7 +202,7 @@ export function UserPlugin({
    * CLICK
    * TODO: 过滤容器，用户事件队列可以不上报，发生错误时可以上报用户轨迹
    */
-  const captureUserClick = () => {
+  const _captureUserClick = () => {
     document.addEventListener('click', (e: MouseEvent) => {
       const target = e.target as HTMLElement
 
@@ -211,7 +210,7 @@ export function UserPlugin({
       console.log(target.closest)
 
       eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-        category: CATEGORY.USER,
+
         type: USER.CLICK,
         emitTime: getDate(new Date()),
         clickTarget: {
@@ -237,7 +236,7 @@ export function UserPlugin({
     emitUniqueVisitor()
     !hash && captureHashRoute()
     !history && captureHistoryRoute()
-    // captureUserClick()
+    // _captureUserClick()
     captureFetchRequest()
     captureXHRRequest()
   }
