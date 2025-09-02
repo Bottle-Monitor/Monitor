@@ -63,7 +63,7 @@ export interface LongTaskData {
   duration: number // 任务持续时间
   startTime: number // 开始时间
   name: string // 任务名称
-  attribution?: PerformanceEventTiming['attribution'] // 归因信息
+  attribution?: any // 归因信息
 }
 
 /**
