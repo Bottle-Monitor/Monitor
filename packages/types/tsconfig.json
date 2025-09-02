@@ -6,6 +6,7 @@
     "module": "ES2020",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "types": [],
     "strict": true,
     "declaration": true,
     "declarationMap": true,
