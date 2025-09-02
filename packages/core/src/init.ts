@@ -262,7 +262,7 @@ class BottleMonitor {
    * 获取SDK版本
    */
   private getSDKVersion(): string {
-    return process.env.SDK_VERSION || '1.0.0'
+    return '1.0.0'
   }
 }
 

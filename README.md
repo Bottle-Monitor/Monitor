@@ -26,6 +26,32 @@ yarn add @bottle-monitor/core @bottle-monitor/plugins
 
 ## 🚀 快速开始
 
+### 前后端联调测试
+
+如果你想测试SDK的前后端联调功能，可以使用我们提供的测试环境：
+
+```bash
+# 方法1: 使用启动脚本（推荐）
+# Windows
+start-integration-test.bat
+
+# PowerShell
+.\start-integration-test.ps1
+
+# 方法2: 手动启动
+# 启动后端服务器
+cd apps/server && npm start
+
+# 启动前端应用
+cd apps/demo && npm run dev
+```
+
+启动后访问：
+- 前端应用: http://localhost:5173
+- 后端服务器: http://localhost:3000
+
+详细测试说明请参考：[前后端联调测试指南](./TESTING_INTEGRATION.md)
+
 ### 基础配置
 
 ```typescript

@@ -1,69 +1,210 @@
-# React + TypeScript + Vite
+# 🍶 Bottle Monitor Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+这是 Bottle Monitor SDK 的演示应用，展示了完整的监控系统功能和用户界面。
 
-Currently, two official plugins are available:
+## ✨ 功能特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🎯 核心监控功能
+- **错误监控** - 自动捕获JavaScript错误、Promise错误、资源加载错误等
+- **性能监控** - Core Web Vitals、长任务、内存泄漏等性能指标
+- **用户行为监控** - 点击、页面访问、路由变化、网络请求等用户行为
+- **实时数据上报** - 多队列管理、离线缓存、智能重试
 
-## Expanding the ESLint configuration
+### 🖥️ 用户界面
+- **响应式设计** - 支持桌面端和移动端
+- **Ant Design** - 现代化的UI组件库
+- **实时图表** - 使用ECharts展示监控数据
+- **数据表格** - 详细的监控数据列表和筛选
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 快速开始
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. 启动监控服务器
+```bash
+cd apps/server
+npm install
+npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-import reactDom from 'eslint-plugin-react-dom'
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. 启动Demo应用
+```bash
+cd apps/demo
+npm install
+npm run dev
 ```
+
+### 3. 访问应用
+打开浏览器访问 `http://localhost:5173`
+
+## 📱 页面说明
+
+### 🏠 仪表盘
+- 监控系统整体概览
+- 关键指标统计卡片
+- 实时数据趋势图表
+- 系统状态监控
+
+### 🐛 错误监控
+- 错误类型分布饼图
+- 错误趋势折线图
+- 错误率指标展示
+- 详细错误列表
+
+### 📊 性能监控
+- Core Web Vitals雷达图
+- 性能指标趋势图
+- 性能评分仪表盘
+- 性能数据详情
+
+### 👤 用户行为
+- 用户行为分布图
+- 活跃度趋势图
+- 实时行为时间线
+- 热门页面统计
+
+## 🧪 测试功能
+
+### 错误测试页面
+- **基础错误测试**
+  - JavaScript错误
+  - Promise错误
+  - 未处理Promise错误
+
+- **高级错误测试**
+  - 资源加载错误
+  - 网络请求错误
+  - 白屏检测
+
+- **特殊错误测试**
+  - 语法错误
+  - 类型错误
+  - 范围错误
+
+- **自定义错误上报**
+  - 手动上报错误
+  - 批量错误生成
+
+### 性能测试页面
+- **基础性能测试**
+  - 长任务测试
+  - 网络延迟测试
+  - 渲染性能测试
+
+- **高级性能测试**
+  - 内存泄漏测试
+  - FPS下降测试
+  - 批量性能测试
+
+### 用户行为测试页面
+- **手动行为测试**
+  - 点击事件记录
+  - 页面访问记录
+  - 路由变化记录
+  - 网络请求记录
+
+- **自动行为测试**
+  - 自动点击测试
+  - 自动导航测试
+  - 场景模拟测试
+
+- **场景模拟**
+  - 用户行为序列
+  - 表单提交流程
+  - 购物车操作
+
+## 🔧 技术架构
+
+### 前端技术栈
+- **React 19** - 现代化的React框架
+- **TypeScript** - 类型安全的JavaScript
+- **Ant Design** - 企业级UI组件库
+- **ECharts** - 数据可视化图表库
+- **React Router** - 客户端路由管理
+
+### 监控SDK集成
+- **@bottle-monitor/core** - 核心监控功能
+- **@bottle-monitor/plugins** - 监控插件
+- **实时数据上报** - 自动错误捕获和性能监控
+
+### 数据管理
+- **监控服务** - 与后端API交互
+- **状态管理** - React Hooks状态管理
+- **数据缓存** - 本地数据缓存和同步
+
+## 📊 数据流程
+
+```
+用户操作 → 监控SDK → 数据采集 → 事件总线 → 队列管理 → 数据上报 → 监控服务器
+    ↓           ↓         ↓         ↓         ↓         ↓         ↓
+  界面交互   自动捕获   错误/性能   事件分发   数据缓存   网络传输   数据存储
+```
+
+## 🎨 界面特色
+
+### 设计原则
+- **简洁明了** - 清晰的信息层次和布局
+- **响应式** - 适配不同屏幕尺寸
+- **实时性** - 实时数据更新和状态反馈
+- **交互性** - 丰富的交互元素和反馈
+
+### 组件特色
+- **统计卡片** - 关键指标的直观展示
+- **趋势图表** - 数据变化的可视化
+- **数据表格** - 详细数据的结构化展示
+- **操作按钮** - 功能测试和交互控制
+
+## 🚨 注意事项
+
+### 开发环境
+- 确保Node.js版本 >= 16
+- 监控服务器需要先启动
+- 浏览器需要支持现代JavaScript特性
+
+### 测试建议
+- 先启动监控服务器再启动demo
+- 测试时注意控制台错误信息
+- 避免在生产环境使用测试功能
+- 及时停止自动测试避免数据污染
+
+### 性能考虑
+- 大量数据时注意内存使用
+- 长时间运行测试时注意资源清理
+- 网络请求测试时注意频率限制
+
+## 🔍 故障排除
+
+### 常见问题
+1. **监控服务器连接失败**
+   - 检查服务器是否启动
+   - 确认端口配置正确
+   - 检查网络连接
+
+2. **数据不显示**
+   - 检查浏览器控制台错误
+   - 确认SDK初始化成功
+   - 验证数据上报状态
+
+3. **测试功能异常**
+   - 检查测试环境配置
+   - 确认依赖库版本
+   - 查看错误日志
+
+### 调试技巧
+- 使用浏览器开发者工具
+- 查看网络请求和响应
+- 监控控制台日志输出
+- 检查SDK配置参数
+
+## 📚 相关文档
+
+- [Bottle Monitor SDK 文档](../README.md)
+- [API 接口文档](../server/README.md)
+- [开发指南](../DEVELOPMENT.md)
+- [架构设计](../docs/architecture.png)
+
+## 🤝 贡献指南
+
+欢迎提交Issue和Pull Request来改进这个demo应用！
+
+## 📄 许可证
+
+[ISC License](../../LICENSE) © 2024 Bottle414

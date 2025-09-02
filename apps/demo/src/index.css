@@ -36,12 +36,46 @@ body {
   background: #f5f5f5;
 }
 
+/* 移除强制深色主题，让组件使用Ant Design的默认主题 */
+
+/* 确保左侧菜单颜色统一 */
 .ant-layout-sider {
-  background: #001529 !important;
+  background: #ffffff !important;
 }
 
-.ant-menu-dark {
-  background: #001529;
+.ant-menu {
+  background: #ffffff !important;
+}
+
+.ant-menu-item {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-menu-item:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.ant-menu-item-selected {
+  background-color: #e6f7ff !important;
+  color: #1890ff !important;
+}
+
+.ant-menu-item-selected::after {
+  border-right-color: #1890ff !important;
+}
+
+/* 确保分割线颜色统一 */
+.ant-menu-item-divider {
+  border-color: #f0f0f0 !important;
+}
+
+/* 确保图标颜色统一 */
+.ant-menu-item .anticon {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-menu-item-selected .anticon {
+  color: #1890ff !important;
 }
 
 /* 自定义滚动条样式 */

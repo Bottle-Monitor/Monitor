@@ -1,319 +1,647 @@
-import { ClockCircleOutlined, EyeOutlined, UserOutlined } from '@ant-design/icons'
-import { Card, Col, Row, Statistic, Table, Tag, Timeline, Typography } from 'antd'
-import dayjs from 'dayjs'
+import type { MonitoringData } from '../services/monitoringService'
+import {
+  CheckCircleOutlined,
+  EyeOutlined,
+  MoreOutlined,
+  ReloadOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
+import { Button, Card, Col, Descriptions, Progress, Row, Space, Statistic, Table, Tag, Timeline, Typography } from 'antd'
 import ReactECharts from 'echarts-for-react'
-import { useEffect, useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { monitoringService } from '../services/monitoringService'
 
 const { Title, Text } = Typography
 
-interface MonitoringData {
-  monitoringData: any[]
-}
+const UserBehavior: React.FC = () => {
+  const [userData, setUserData] = useState<MonitoringData[]>([])
+  const [loading, setLoading] = useState(false)
+  const [selectedBehavior, setSelectedBehavior] = useState<MonitoringData | null>(null)
+  const [stats, setStats] = useState<any>(null)
+  const [userBehaviorStats, setUserBehaviorStats] = useState<any>({})
 
-interface UserAction {
-  type: string
-  target: string
-  time: number
-  url: string
-  [key: string]: any
-}
-
-export function Component() {
-  const { monitoringData } = useOutletContext<MonitoringData>()
-  const [userActions, setUserActions] = useState<UserAction[]>([])
-  const [pageViews, setPageViews] = useState<any[]>([])
-  const [_clickHeatmap, setClickHeatmap] = useState<any[]>([])
-
-  // 处理用户行为数据
   useEffect(() => {
-    if (monitoringData) {
-      const actions = monitoringData.filter(item => item.category === 'user')
-      setUserActions(actions)
+    loadUserBehaviorData()
+    // 每5秒刷新一次用户行为数据，实现实时联动
+    const interval = setInterval(loadUserBehaviorData, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
-      // 统计页面访问
-      const pageViewData = actions
-        .filter(action => action.type === 'history-route' || action.type === 'hash-route')
-        .reduce((acc: any, action) => {
-          const page = action.url || action.target
-          acc[page] = (acc[page] || 0) + 1
-          return acc
-        }, {})
+  const loadUserBehaviorData = async () => {
+    setLoading(true)
+    try {
+      // 获取所有用户相关的数据，包括测试页面上报的数据
+      const [userData, statsData] = await Promise.all([
+        monitoringService.getMonitoringData({
+          category: 'user',
+          limit: 100,
+          // 添加时间范围，获取最近的数据
+          startTime: Date.now() - 24 * 60 * 60 * 1000, // 最近24小时
+        }),
+        monitoringService.getStats(),
+      ])
 
-      setPageViews(Object.entries(pageViewData).map(([page, count]) => ({
-        page,
-        count,
-      })))
+      if (userData?.items) {
+        setUserData(userData.items)
+      }
 
-      // 点击热力图数据
-      const clicks = actions.filter(action => action.type === 'click')
-      setClickHeatmap(clicks)
+      if (statsData) {
+        setStats(statsData)
+        setUserBehaviorStats(statsData.userBehaviorStats || {})
+      }
     }
-  }, [monitoringData])
-
-  // 用户行为分布图
-  const behaviorDistributionOption = {
-    title: {
-      text: '用户行为类型分布',
-      left: 'center',
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: '{a} <br/>{b}: {c} ({d}%)',
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left',
-    },
-    series: [
-      {
-        name: '行为类型',
-        type: 'pie',
-        radius: '50%',
-        data: [
-          {
-            value: userActions.filter(action => action.type === 'click').length,
-            name: '点击事件',
-            itemStyle: { color: '#1890ff' },
-          },
-          {
-            value: userActions.filter(action => action.type === 'history-route').length,
-            name: '页面跳转',
-            itemStyle: { color: '#52c41a' },
-          },
-          {
-            value: userActions.filter(action => action.type === 'hash-route').length,
-            name: '哈希路由',
-            itemStyle: { color: '#faad14' },
-          },
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
-          },
-        },
-      },
-    ],
+    catch (error) {
+      console.error('加载用户行为数据失败:', error)
+    }
+    finally {
+      setLoading(false)
+    }
   }
 
-  // 用户活跃度趋势图
-  const activityTrendOption = {
-    title: {
-      text: '用户活跃度趋势',
-      left: 'center',
-    },
-    tooltip: {
-      trigger: 'axis',
-    },
-    xAxis: {
-      type: 'category',
-      data: Array.from({ length: 24 }, (_, i) => `${i}:00`),
-    },
-    yAxis: {
-      type: 'value',
-      name: '操作次数',
-    },
-    series: [
-      {
-        name: '用户操作',
-        type: 'bar',
-        data: Array.from({ length: 24 }, () => Math.floor(Math.random() * 50 + 10)),
-        itemStyle: {
-          color: '#52c41a',
-        },
+  const getUserBehaviorChartOption = () => {
+    // 基于真实数据生成饼图
+    const chartData = Object.entries(userBehaviorStats)
+      .map(([type, stats]: [string, any]) => ({
+        value: stats.count || 0,
+        name: getBehaviorTypeText(type),
+      }))
+      .filter(item => item.value > 0)
+
+    if (chartData.length === 0) {
+      return {
+        title: { text: '暂无用户行为数据', left: 'center' },
+        error: { text: '暂无数据' },
+      }
+    }
+
+    return {
+      title: {
+        text: '用户行为分布',
+        left: 'center',
       },
-    ],
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)',
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left',
+      },
+      series: [
+        {
+          name: '行为类型',
+          type: 'pie',
+          radius: '50%',
+          data: chartData,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)',
+            },
+          },
+        },
+      ],
+    }
   }
 
-  // 页面访问量图表
-  const pageViewOption = {
-    title: {
-      text: '页面访问量统计',
-      left: 'center',
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow',
+  const getUserBehaviorTrendChartOption = () => {
+    // 基于真实数据生成趋势图
+    if (!userData || userData.length === 0) {
+      return {
+        title: { text: '暂无趋势数据', left: 'center' },
+        error: { text: '暂无数据' },
+      }
+    }
+
+    // 按小时统计用户行为趋势
+    const now = new Date()
+    const hours = []
+    const clickData = []
+    const pageViewData = []
+    const routeChangeData = []
+    const networkData = []
+
+    for (let i = 23; i >= 0; i--) {
+      const hour = new Date(now.getTime() - i * 60 * 60 * 1000)
+      hours.push(`${hour.getHours().toString().padStart(2, '0')}:00`)
+
+      const hourStart = hour.getTime()
+      const hourEnd = hourStart + 60 * 60 * 1000
+
+      // 计算每小时的数据量
+      const hourData = userData.filter(item =>
+        item.timestamp >= hourStart && item.timestamp < hourEnd,
+      )
+
+      clickData.push(hourData.filter(item => item.type === 'click').length)
+      pageViewData.push(hourData.filter(item => item.type === 'pageView').length)
+      routeChangeData.push(hourData.filter(item => item.type === 'history').length)
+      networkData.push(hourData.filter(item => item.type === 'network').length)
+    }
+
+    return {
+      title: {
+        text: '用户行为趋势（最近24小时）',
+        left: 'center',
       },
-    },
-    xAxis: {
-      type: 'value',
-    },
-    yAxis: {
-      type: 'category',
-      data: pageViews.map(item => item.page),
-    },
-    series: [
-      {
-        name: '访问量',
-        type: 'bar',
-        data: pageViews.map(item => item.count),
-        itemStyle: {
-          color: '#1890ff',
+      tooltip: {
+        trigger: 'axis',
+      },
+      legend: {
+        data: ['点击', '页面访问', '路由变化', '网络请求'],
+        bottom: 0,
+      },
+      xAxis: {
+        type: 'category',
+        data: hours,
+      },
+      yAxis: {
+        type: 'value',
+      },
+      series: [
+        {
+          name: '点击',
+          type: 'line',
+          data: clickData,
+          itemStyle: { color: '#52c41a' },
+          smooth: true,
         },
-      },
-    ],
+        {
+          name: '页面访问',
+          type: 'line',
+          data: pageViewData,
+          itemStyle: { color: '#1890ff' },
+          smooth: true,
+        },
+        {
+          name: '路由变化',
+          type: 'line',
+          data: routeChangeData,
+          itemStyle: { color: '#722ed1' },
+          smooth: true,
+        },
+        {
+          name: '网络请求',
+          type: 'line',
+          data: networkData,
+          itemStyle: { color: '#fa8c16' },
+          smooth: true,
+        },
+      ],
+    }
   }
 
-  // 用户行为表格列
+  const getUserSourceChartOption = () => {
+    // 基于真实数据生成来源分布图
+    if (!userData || userData.length === 0) {
+      return {
+        title: { text: '暂无来源数据', left: 'center' },
+        error: { text: '暂无数据' },
+      }
+    }
+
+    // 统计不同来源的用户行为
+    const sourceStats: Record<string, number> = {}
+    userData.forEach((item) => {
+      const source = (item as any).source || '未知'
+      sourceStats[source] = (sourceStats[source] || 0) + 1
+    })
+
+    const chartData = Object.entries(sourceStats).map(([source, count]) => ({
+      name: source,
+      value: count,
+    }))
+
+    return {
+      title: {
+        text: '用户行为来源分布',
+        left: 'center',
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)',
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left',
+      },
+      series: [
+        {
+          name: '来源',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          data: chartData,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)',
+            },
+          },
+        },
+      ],
+    }
+  }
+
+  const getUserActivityChartOption = () => {
+    // 基于真实数据生成24小时活跃度趋势
+    const now = new Date()
+    const hours = []
+    const activityData = []
+
+    for (let i = 23; i >= 0; i--) {
+      const hour = new Date(now.getTime() - i * 60 * 60 * 1000)
+      hours.push(`${hour.getHours().toString().padStart(2, '0')}:00`)
+
+      const hourStart = hour.getTime()
+      const hourEnd = hourStart + 60 * 60 * 1000
+
+      // 计算每小时的用户行为数量
+      const hourData = userData.filter(item =>
+        item.timestamp >= hourStart && item.timestamp < hourEnd,
+      )
+
+      // 统计独立用户数
+      const uniqueUsers = new Set(hourData.map(item => item.userId).filter(Boolean))
+      activityData.push(uniqueUsers.size)
+    }
+
+    return {
+      title: {
+        text: '用户活跃度趋势 (24小时)',
+        left: 'center',
+      },
+      tooltip: {
+        trigger: 'axis',
+      },
+      xAxis: {
+        type: 'category',
+        data: hours,
+      },
+      yAxis: {
+        type: 'value',
+        name: '活跃用户数',
+      },
+      series: [
+        {
+          name: '活跃用户',
+          type: 'bar',
+          data: activityData,
+          itemStyle: { color: '#1890ff' },
+        },
+      ],
+    }
+  }
+
+  const getBehaviorTypeText = (type: string) => {
+    const typeMap: Record<string, string> = {
+      click: '点击事件',
+      pageView: '页面访问',
+      history: '路由变化',
+      network: '网络请求',
+      deviceInfo: '设备信息',
+      custom: '自定义事件',
+    }
+    return typeMap[type] || type
+  }
+
+  const getBehaviorTypeColor = (type: string) => {
+    const colorMap: Record<string, string> = {
+      click: 'blue',
+      pageView: 'green',
+      history: 'purple',
+      network: 'orange',
+      deviceInfo: 'cyan',
+      custom: 'default',
+    }
+    return colorMap[type] || 'default'
+  }
+
   const columns = [
+    {
+      title: '时间',
+      dataIndex: 'timestamp',
+      key: 'timestamp',
+      render: (timestamp: number) => new Date(timestamp).toLocaleString(),
+    },
     {
       title: '行为类型',
       dataIndex: 'type',
       key: 'type',
-      width: 120,
-      render: (type: string) => {
-        const typeMap: { [key: string]: { label: string, color: string } } = {
-          'click': { label: '点击', color: 'blue' },
-          'history-route': { label: '页面跳转', color: 'green' },
-          'hash-route': { label: '哈希路由', color: 'orange' },
+      render: (type: string) => (
+        <Tag color={getBehaviorTypeColor(type)}>
+          {getBehaviorTypeText(type)}
+        </Tag>
+      ),
+    },
+    {
+      title: '行为详情',
+      dataIndex: 'data',
+      key: 'data',
+      render: (data: any) => {
+        if (data.type === 'click') {
+          return `点击了 ${data.target || '未知元素'}`
         }
-        const config = typeMap[type] || { label: type, color: 'default' }
-        return <Tag color={config.color}>{config.label}</Tag>
+        if (data.type === 'pageView') {
+          return `访问了 ${data.url || '未知页面'}`
+        }
+        if (data.type === 'history') {
+          return `路由变化: ${data.from || '未知'} → ${data.to || '未知'}`
+        }
+        if (data.type === 'network') {
+          return `${data.method || 'GET'} ${data.url || '未知URL'}`
+        }
+        return `${JSON.stringify(data).substring(0, 50)}...`
       },
     },
     {
-      title: '目标元素',
-      dataIndex: 'target',
-      key: 'target',
-      ellipsis: true,
-    },
-    {
-      title: '页面路径',
+      title: '页面URL',
       dataIndex: 'url',
       key: 'url',
-      width: 200,
-      ellipsis: true,
+      render: (url: string) => (
+        <Text ellipsis={{ tooltip: url }}>
+          {url ? new URL(url).pathname : '未知'}
+        </Text>
+      ),
     },
     {
-      title: '发生时间',
-      dataIndex: 'time',
-      key: 'time',
-      width: 180,
-      render: (time: number) => dayjs(time).format('YYYY-MM-DD HH:mm:ss'),
+      title: '用户ID',
+      dataIndex: 'userId',
+      key: 'userId',
+      render: (userId: string) => userId || '匿名',
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_: any, record: MonitoringData) => (
+        <Button
+          size="small"
+          icon={<EyeOutlined />}
+          onClick={() => setSelectedBehavior(record)}
+        >
+          详情
+        </Button>
+      ),
     },
   ]
 
-  // 用户行为时间线数据
-  const timelineItems = userActions
-    .slice(-10)
-    .reverse()
-    .map((action, index) => ({
-      color: action.type === 'click' ? 'blue' : action.type === 'history-route' ? 'green' : 'orange',
-      children: (
-        <div key={index}>
-          <p>
-            <Tag color={action.type === 'click' ? 'blue' : action.type === 'history-route' ? 'green' : 'orange'}>
-              {action.type}
-            </Tag>
-            {action.target || action.url}
-          </p>
-          <p style={{ fontSize: '12px', color: '#999' }}>
-            {dayjs(action.time).format('HH:mm:ss')}
-          </p>
-        </div>
-      ),
-    }))
-
   return (
     <div>
-      <Title level={2}>用户行为分析</Title>
-      <Text type="secondary">分析用户在应用中的交互行为和访问模式</Text>
+      <div style={{ marginBottom: 24 }}>
+        <Title level={2}>用户行为监控</Title>
+        <Text type="secondary">
+          追踪和分析用户在应用中的行为模式，包括点击、页面访问、路由变化等
+        </Text>
+      </div>
 
-      {/* 统计卡片 */}
-      <Row gutter={16} style={{ marginTop: 24 }}>
-        <Col span={6}>
+      {/* 用户行为统计卡片 */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="总交互次数"
-              value={userActions.length}
+              title="总用户行为"
+              value={stats?.userActions || 0}
+              prefix={<UserOutlined />}
               valueStyle={{ color: '#1890ff' }}
-              prefix={<UserOutlined />}
-              suffix="次"
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="页面访问量"
-              value={pageViews.reduce((sum, item) => sum + item.count, 0)}
-              valueStyle={{ color: '#52c41a' }}
+              title="页面访问"
+              value={userBehaviorStats.pageView?.count || 0}
               prefix={<EyeOutlined />}
-              suffix="次"
+              valueStyle={{ color: '#52c41a' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="平均会话时长"
-              value={Math.floor(Math.random() * 300 + 60)}
+              title="点击事件"
+              value={userBehaviorStats.click?.count || 0}
+              prefix={<MoreOutlined />}
+              valueStyle={{ color: '#722ed1' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="独立用户数"
+              value={new Set(userData.map(item => item.userId).filter(Boolean)).size}
+              prefix={<CheckCircleOutlined />}
               valueStyle={{ color: '#faad14' }}
-              prefix={<ClockCircleOutlined />}
-              suffix="秒"
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="活跃用户"
-              value={1}
-              valueStyle={{ color: '#f5222d' }}
-              prefix={<UserOutlined />}
-              suffix="人"
             />
           </Card>
         </Col>
       </Row>
 
       {/* 图表区域 */}
-      <Row gutter={16} style={{ marginTop: 24 }}>
-        <Col span={8}>
-          <Card>
-            <ReactECharts option={behaviorDistributionOption} style={{ height: 300 }} />
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <Card title="用户行为分布">
+            <ReactECharts option={getUserBehaviorChartOption()} style={{ height: 300 }} />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card>
-            <ReactECharts option={activityTrendOption} style={{ height: 300 }} />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <ReactECharts option={pageViewOption} style={{ height: 300 }} />
+        <Col xs={24} lg={12}>
+          <Card title="用户活跃度趋势">
+            <ReactECharts option={getUserActivityChartOption()} style={{ height: 300 }} />
           </Card>
         </Col>
       </Row>
 
-      {/* 实时行为时间线和详细表格 */}
-      <Row gutter={16} style={{ marginTop: 24 }}>
-        <Col span={8}>
-          <Card title="最近用户行为" style={{ height: 400 }}>
-            <Timeline items={timelineItems} />
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <Card title="用户行为趋势">
+            <ReactECharts option={getUserBehaviorTrendChartOption()} style={{ height: 300 }} />
           </Card>
         </Col>
-        <Col span={16}>
-          <Card title="用户行为详情">
-            <Table
-              columns={columns}
-              dataSource={userActions}
-              rowKey="time"
-              pagination={{
-                pageSize: 8,
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-              }}
-              locale={{ emptyText: '暂无用户行为数据' }}
-              scroll={{ y: 300 }}
-            />
+        <Col xs={24} lg={12}>
+          <Card title="用户行为来源分布">
+            <ReactECharts option={getUserSourceChartOption()} style={{ height: 300 }} />
           </Card>
         </Col>
       </Row>
+
+      {/* 用户行为指标 */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={8}>
+          <Card title="页面访问率">
+            <Progress percent={85} status="active" />
+            <Text type="secondary">较昨日 +5%</Text>
+          </Card>
+        </Col>
+        <Col xs={24} lg={8}>
+          <Card title="用户停留时间">
+            <Progress percent={72} status="active" />
+            <Text type="secondary">平均: 3分25秒</Text>
+          </Card>
+        </Col>
+        <Col xs={24} lg={8}>
+          <Card title="跳出率">
+            <Progress percent={28} status="active" />
+            <Text type="secondary">较昨日 -3%</Text>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 实时用户行为 */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <Card title="实时用户行为" extra={<Button size="small" icon={<ReloadOutlined />} onClick={loadUserBehaviorData}>刷新</Button>}>
+            {userData.length === 0
+              ? (
+                  <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                    <Text type="secondary">暂无用户行为数据</Text>
+                  </div>
+                )
+              : (
+                  <Timeline>
+                    {userData.slice(0, 5).map((item, index) => (
+                      <Timeline.Item key={item.id} color={getBehaviorTypeColor(item.type)}>
+                        <Text>
+                          用户
+                          {' '}
+                          {item.userId || '匿名'}
+                          {' '}
+                          {getBehaviorTypeText(item.type)}
+                        </Text>
+                        <br />
+                        <Text type="secondary">
+                          {Math.round((Date.now() - item.timestamp) / 1000)}
+                          秒前
+                        </Text>
+                      </Timeline.Item>
+                    ))}
+                  </Timeline>
+                )}
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="热门页面">
+            {(() => {
+              // 统计页面访问次数
+              const pageStats = new Map<string, number>()
+              userData.forEach((item) => {
+                if (item.url) {
+                  const pathname = new URL(item.url).pathname
+                  pageStats.set(pathname, (pageStats.get(pathname) || 0) + 1)
+                }
+              })
+
+              const sortedPages = Array.from(pageStats.entries())
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 4)
+
+              if (sortedPages.length === 0) {
+                return (
+                  <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                    <Text type="secondary">暂无页面访问数据</Text>
+                  </div>
+                )
+              }
+
+              const maxCount = Math.max(...sortedPages.map(([, count]) => count))
+
+              return (
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  {sortedPages.map(([pathname, count]) => (
+                    <React.Fragment key={pathname}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text>{pathname}</Text>
+                        <Text strong>
+                          {count}
+                          {' '}
+                          次访问
+                        </Text>
+                      </div>
+                      <Progress percent={Math.round((count / maxCount) * 100)} showInfo={false} />
+                    </React.Fragment>
+                  ))}
+                </Space>
+              )
+            })()}
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 用户行为列表 */}
+      <Card
+        title="用户行为列表"
+        extra={<Button size="small" icon={<ReloadOutlined />} onClick={loadUserBehaviorData}>刷新</Button>}
+      >
+        <Table
+          columns={columns}
+          dataSource={userData}
+          rowKey="id"
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: total => `共 ${total} 条行为记录`,
+          }}
+          loading={loading}
+          size="small"
+        />
+      </Card>
+
+      {/* 行为详情弹窗 */}
+      {selectedBehavior && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        >
+          <Card
+            title="用户行为详情"
+            style={{ width: '80%', maxWidth: 800 }}
+            extra={
+              <Button type="text" onClick={() => setSelectedBehavior(null)}>✕</Button>
+            }
+          >
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label="行为类型">
+                <Tag color={getBehaviorTypeColor(selectedBehavior.type)}>
+                  {getBehaviorTypeText(selectedBehavior.type)}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="发生时间">
+                {new Date(selectedBehavior.timestamp).toLocaleString()}
+              </Descriptions.Item>
+              <Descriptions.Item label="页面URL" span={2}>
+                {selectedBehavior.url || '未知'}
+              </Descriptions.Item>
+              <Descriptions.Item label="用户ID">
+                {selectedBehavior.userId || '匿名'}
+              </Descriptions.Item>
+              <Descriptions.Item label="会话ID">
+                {selectedBehavior.sessionId || '未知'}
+              </Descriptions.Item>
+              <Descriptions.Item label="用户代理" span={2}>
+                {selectedBehavior.userAgent || '未知'}
+              </Descriptions.Item>
+              <Descriptions.Item label="行为详情" span={2}>
+                <pre style={{ background: '#f5f5f5', padding: 16, borderRadius: 4 }}>
+                  {JSON.stringify(selectedBehavior.data, null, 2)}
+                </pre>
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
+
+export default UserBehavior
