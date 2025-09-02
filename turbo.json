@@ -2,15 +2,34 @@
   "$schema": "https://turborepo.com/schema.json",
   "tasks": {
     "build": {
-      "outputs": ["dist/**"]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV"]
     },
-    "build:core": {
-      "dependsOn": ["build"],
-      "outputs": ["packages/core/dist/**"]
+    "dev": {
+      "cache": false,
+      "persistent": true
     },
-    "build:demo": {
-      "dependsOn": ["build"],
-      "outputs": ["apps/demo/dist/**"]
+    "test": {
+      "outputs": ["coverage/**"],
+      "env": ["NODE_ENV"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": [],
+      "env": ["NODE_ENV"]
+    },
+    "clean": {
+      "cache": false
     }
-  }
+  },
+  "globalDependencies": [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "tsconfig*.json",
+    ".changeset/**"
+  ]
 }
