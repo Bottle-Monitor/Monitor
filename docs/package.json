@@ -1,0 +1,15 @@
+{
+  "name": "bottle-monitor-docs",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Bottle Monitor SDK Documentation",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0-rc.45",
+    "vue": "^3.4.0"
+  }
+}

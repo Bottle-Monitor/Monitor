@@ -20,13 +20,6 @@ const UserBehavior: React.FC = () => {
   const [stats, setStats] = useState<any>(null)
   const [userBehaviorStats, setUserBehaviorStats] = useState<any>({})
 
-  useEffect(() => {
-    loadUserBehaviorData()
-    // 每5秒刷新一次用户行为数据，实现实时联动
-    const interval = setInterval(loadUserBehaviorData, 5000)
-    return () => clearInterval(interval)
-  }, [])
-
   const loadUserBehaviorData = async () => {
     setLoading(true)
     try {
@@ -385,6 +378,13 @@ const UserBehavior: React.FC = () => {
       ),
     },
   ]
+
+  useEffect(() => {
+    loadUserBehaviorData()
+    // 每5秒刷新一次用户行为数据，实现实时联动
+    const interval = setInterval(loadUserBehaviorData, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div>
