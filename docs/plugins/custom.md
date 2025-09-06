@@ -101,5 +101,5 @@ MyCustomPlugin({
 如果您在使用错误监控插件时遇到任何问题，欢迎：
 
 - 📝 查看 [常见问题](../faq.md)
-- 🐛 提交 [Issue](https://github.com/bottle414/bottle-monitor/issues)
-- 💬 参与 [讨论](https://github.com/bottle414/bottle-monitor/discussions)
+- 🐛 提交 [Issue](https://github.com/Bottle-Monitor/Monitor/issues)
+- 💬 参与 [讨论](https://github.com/Bottle-Monitor/Monitor/discussions)
