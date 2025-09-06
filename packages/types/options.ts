@@ -30,6 +30,7 @@ export enum ABNORMAL {
   UNHANDLEDREJECTION = 'unhandledRejection', // 未捕获错误
   RESOURCE = 'resource', // 资源加载错误
   WHITESCREEN = 'whitescreen', // 白屏
+  NETWORK = 'network',
 }
 
 export enum CATEGORY {
