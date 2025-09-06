@@ -2,7 +2,7 @@
 **dist**
 **sdk**
 
-.vitepress
+cache
 .turbo
 
 # local env files

@@ -17,7 +17,7 @@
     "postinstall": "simple-git-hooks",
     "demo": "pnpm --filter demo run dev",
     "server": "pnpm --filter server run dev",
-    "docs": "pnpm --filter docs run dev",
+    "docs": "pnpm --filter docs run docs:dev",
     "build": "turbo run build",
     "build:core": "turbo run build --filter=@bottle-monitor/core",
     "build:types": "turbo run build --filter=@bottle-monitor/types",
