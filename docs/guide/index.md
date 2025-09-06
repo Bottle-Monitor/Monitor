@@ -308,13 +308,13 @@ export default {
 
 - 📖 阅读 [安装指南](./installation.md) 了解详细的安装步骤
 - 🔧 查看 [配置选项](./configuration.md) 了解所有可配置项
-- 🔌 学习 [插件系统](./plugins.md) 了解如何开发自定义插件
+- 🔌 查看 [插件](./plugins/index.md) 了解核心插件和自定义插件
 - 📱 参考 [集成示例](../examples/) 了解各种框架的集成方法
 
 如果您在使用过程中遇到任何问题，欢迎：
 
 - 📝 查看 [常见问题](../faq.md)
-- 🐛 提交 [Issue](https://github.com/bottle414/bottle-monitor/issues)
-- 💬 参与 [讨论](https://github.com/bottle414/bottle-monitor/discussions)
+- 🐛 提交 [Issue](https://github.com/Bottle-Monitor/Monitor/issues)
+- 💬 参与 [讨论](https://github.com/Bottle-Monitor/Monitor/discussions)
 
 祝您使用愉快！🚀
