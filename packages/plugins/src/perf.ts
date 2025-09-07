@@ -348,6 +348,34 @@ export function WebVitalsPlugin({
   }
 
   /**
+   * FPS
+   */
+  const getFPS = () => {
+    let lastTime = performance.now()
+    let fps = 0
+    let frame = 0
+
+    const loop = () => {
+      frame++
+      const now = performance.now()
+      const diff = now - lastTime
+      if (diff >= 1000) { // 1s 计算一次
+        fps = Math.round((frame * 1000) / diff)
+        eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
+          category: CATEGORY.VITALS,
+          type: VITALS.FPS,
+          emitTime: getDate(new Date()),
+          value: fps,
+        })
+        frame = 0
+        lastTime = now
+      }
+      requestAnimationFrame(loop)
+    }
+    requestAnimationFrame(loop)
+  }
+
+  /**
    * LONGTASK
    */
   const getLongTask = () => {
@@ -374,24 +402,28 @@ export function WebVitalsPlugin({
     getResourceCacheHitRate()
   })
 
-  const getWebVitals = (collectTarget: string[]) => {
-    getTTFB()
+  const initPlugin = () => {
+    const {
+      INP,
+      FPS,
+      FSP,
+      Resource,
+      TTFB,
+      LONGTASK,
+    } = vitalsOptions
+
     getCoreWebVitals([
       'paint',
       'largest-contentful-paint',
       'first-input',
       'layout-shift',
     ])
-  }
-
-  const initPlugin = () => {
-    const collectTarget: string[] = []
-    // getWebVitals(collectTarget)
-    // getLongTask()
-    // getFPS()
-    // getINP()
-    // getPaintTime(['.data-block'])
-    setTimeout(() => getFSP(['.data-block']))
+    TTFB && getTTFB()
+    Resource && getResourceCacheHitRate()
+    LONGTASK && getLongTask()
+    INP && getINP()
+    setTimeout(() => FSP && getFSP(['.data-block']))
+    FPS && getFPS()
   }
 
   initPlugin()
