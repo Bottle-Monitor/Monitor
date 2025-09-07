@@ -1,0 +1,51 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  check-commit:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+    steps:
+      - name: Check commit message scope
+        id: check
+        run: |
+          commit_msg="${{ github.event.head_commit.message }}"
+          if [[ "$commit_msg" =~ \([^)]*docs[^)]*\): ]]; then
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ Found docs scope in commit message: $commit_msg"
+          else
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+            echo "❌ No docs scope found in commit message: $commit_msg"
+          fi
+
+  deploy:
+    needs: check-commit
+    if: needs.check-commit.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          cd docs
+          npm install
+          
+      - name: Build docs
+        run: |
+          cd docs
+          npm run docs:build
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/.vitepress/dist
