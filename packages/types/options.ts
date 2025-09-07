@@ -86,15 +86,17 @@ export type UserOptions = Partial<{
  * WEB_VITALS_PLUGIN
  */
 export type VitalsOptions = Partial<{
-  FCP: boolean
-  CLS: boolean
+  // merged FCP/CLS/FID/LCP to core vitals
+  // FCP: boolean
+  // CLS: boolean
   INP: boolean
-  FID: boolean
+  // FID: boolean
   FPS: boolean
   FSP: boolean
-  LCP: boolean
+  // LCP: boolean
   Resource: boolean
   TTFB: boolean
+  FSPContainers: string[] // 首屏加载判断元素
 }>
 
 /**

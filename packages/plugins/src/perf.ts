@@ -254,51 +254,6 @@ export function WebVitalsPlugin({
   }
 
   /**
-   * 获取关键元素绘制时间
-   * PerformanceObserver + entryType = 'element' + elementtiming. 局限于 img、p
-   */
-  const isInScreen = (dom: HTMLElement) => {
-    const { top, left, bottom, right } = dom.getBoundingClientRect()
-    const viewportHeight = window.innerHeight
-    const viewportWidth = window.innerWidth
-    return (
-      top < viewportHeight
-      && bottom > 0
-      && left < viewportWidth
-      && right > 0
-    )
-  }
-  const getPaintTime = (targets: string[]) => {
-    let FSP = performance.now()
-    targets.forEach((selector) => {
-      const observer = new MutationObserver((mutationList) => {
-        mutationList.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (!(node instanceof HTMLElement))
-              return
-            if (
-              (node.matches(selector)
-                || node.querySelector(selector))
-              && isInScreen(node)
-            ) {
-              console.log('元素更新: ', selector, node)
-              FSP = performance.now()
-              // observer.disconnect()
-            }
-          })
-        })
-      })
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-      })
-    })
-  }
-
-  /**
    * FSP
    */
   function getFSP(selectors: string[]) {
@@ -407,6 +362,7 @@ export function WebVitalsPlugin({
       INP,
       FPS,
       FSP,
+      FSPContainers = [],
       Resource,
       TTFB,
       LONGTASK,
@@ -422,7 +378,7 @@ export function WebVitalsPlugin({
     Resource && getResourceCacheHitRate()
     LONGTASK && getLongTask()
     INP && getINP()
-    setTimeout(() => FSP && getFSP(['.data-block']))
+    setTimeout(() => FSP && getFSP(FSPContainers))
     FPS && getFPS()
   }
 
