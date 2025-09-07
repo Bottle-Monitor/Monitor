@@ -1,3 +1,5 @@
+# 使用示例
+```typescript
 /**
  * Bottle Monitor SDK 基本使用示例
  */
@@ -97,3 +99,4 @@ setTimeout(() => {
 }, 8000)
 
 console.log('Bottle Monitor initialized successfully!')
+```
