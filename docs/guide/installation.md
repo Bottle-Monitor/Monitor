@@ -68,5 +68,5 @@ npx bottle-copy-sw --dir=static
 安装完成后，你可以：
 
 1. 查看 [配置指南](./config.md) 了解详细配置选项
-2. 查看 [插件文档](./plugins.md) 了解各插件的具体功能
+2. 查看 [插件文档](../plugins/index.md) 了解各插件的具体功能
 3. 查看 [API 文档](./api.md) 了解可用的 API 方法
