@@ -40,6 +40,8 @@ export function formatVitalsOptions(vitalsOptions: VitalsPlugin) {
     LCP: true,
     Resource: true,
     TTFB: true,
+    LONGTASK: true,
+    FSPContainers: [],
   }, 'vitals')
 }
 

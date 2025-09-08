@@ -254,51 +254,6 @@ export function WebVitalsPlugin({
   }
 
   /**
-   * 获取关键元素绘制时间
-   * PerformanceObserver + entryType = 'element' + elementtiming. 局限于 img、p
-   */
-  const isInScreen = (dom: HTMLElement) => {
-    const { top, left, bottom, right } = dom.getBoundingClientRect()
-    const viewportHeight = window.innerHeight
-    const viewportWidth = window.innerWidth
-    return (
-      top < viewportHeight
-      && bottom > 0
-      && left < viewportWidth
-      && right > 0
-    )
-  }
-  const getPaintTime = (targets: string[]) => {
-    let FSP = performance.now()
-    targets.forEach((selector) => {
-      const observer = new MutationObserver((mutationList) => {
-        mutationList.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (!(node instanceof HTMLElement))
-              return
-            if (
-              (node.matches(selector)
-                || node.querySelector(selector))
-              && isInScreen(node)
-            ) {
-              console.log('元素更新: ', selector, node)
-              FSP = performance.now()
-              // observer.disconnect()
-            }
-          })
-        })
-      })
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-      })
-    })
-  }
-
-  /**
    * FSP
    */
   function getFSP(selectors: string[]) {
@@ -348,6 +303,34 @@ export function WebVitalsPlugin({
   }
 
   /**
+   * FPS
+   */
+  const getFPS = () => {
+    let lastTime = performance.now()
+    let fps = 0
+    let frame = 0
+
+    const loop = () => {
+      frame++
+      const now = performance.now()
+      const diff = now - lastTime
+      if (diff >= 1000) { // 1s 计算一次
+        fps = Math.round((frame * 1000) / diff)
+        eventBus.emit('bottle-monitor:transport', CATEGORY.VITALS, {
+          category: CATEGORY.VITALS,
+          type: VITALS.FPS,
+          emitTime: getDate(new Date()),
+          value: fps,
+        })
+        frame = 0
+        lastTime = now
+      }
+      requestAnimationFrame(loop)
+    }
+    requestAnimationFrame(loop)
+  }
+
+  /**
    * LONGTASK
    */
   const getLongTask = () => {
@@ -374,24 +357,29 @@ export function WebVitalsPlugin({
     getResourceCacheHitRate()
   })
 
-  const getWebVitals = (collectTarget: string[]) => {
-    getTTFB()
+  const initPlugin = () => {
+    const {
+      INP,
+      FPS,
+      FSP,
+      FSPContainers = [],
+      Resource,
+      TTFB,
+      LONGTASK,
+    } = vitalsOptions
+
     getCoreWebVitals([
       'paint',
       'largest-contentful-paint',
       'first-input',
       'layout-shift',
     ])
-  }
-
-  const initPlugin = () => {
-    const collectTarget: string[] = []
-    // getWebVitals(collectTarget)
-    // getLongTask()
-    // getFPS()
-    // getINP()
-    // getPaintTime(['.data-block'])
-    setTimeout(() => getFSP(['.data-block']))
+    TTFB && getTTFB()
+    Resource && getResourceCacheHitRate()
+    LONGTASK && getLongTask()
+    INP && getINP()
+    setTimeout(() => FSP && getFSP(FSPContainers))
+    FPS && getFPS()
   }
 
   initPlugin()
