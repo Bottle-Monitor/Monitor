@@ -16,9 +16,37 @@ function formatPluginOptions(
 
 // 导出具体插件的包装函数
 export function formatUserOptions(userOptions: UserPlugin) {
+  let clickContainers = userOptions.options.clickContainers
+  // 把容器标识符格式化
+  const ids: string[] = []
+  const classes: string[] = []
+  const datasets: string[] = []
+  if (clickContainers?.length) {
+    userOptions.options.clickContainers?.forEach((item) => {
+      if (item.startsWith('#')) {
+        ids.push(item.slice(1))
+      }
+      else if (item.startsWith('.')) {
+        classes.push(item.slice(1))
+      }
+      else if (item.startsWith('[data-track')) {
+        datasets.push(item.slice(10))
+      }
+    })
+
+    clickContainers = {
+      ids,
+      classes,
+      datasets,
+    }
+  }
+
   return formatPluginOptions(userOptions, {
     click: true,
     clickContainers: [],
+    ids,
+    classes,
+    datasets,
     network: true,
     hash: true,
     history: true,
