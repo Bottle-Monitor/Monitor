@@ -13,7 +13,7 @@ export function UserPlugin({
   userOptions: UserOptions
 }) {
   let currentURL = location.href
-  const visitorId = nanoid()// TODO: 传个id
+  const visitorId = nanoid()
 
   /**
    * DEVICE_INFO
@@ -41,7 +41,6 @@ export function UserPlugin({
    */
   const emitFirstPageView = () => {
     eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-
       type: USER.HISTORY_ROUTE,
       emitTime: getDate(new Date()),
       method: 'pushState',
@@ -200,17 +199,22 @@ export function UserPlugin({
 
   /**
    * CLICK
-   * TODO: 过滤容器，用户事件队列可以不上报，发生错误时可以上报用户轨迹
    */
-  const _captureUserClick = () => {
+  const captureUserClick = (clickContainers: any) => {
+    const { ids, classes, datasets } = clickContainers
     document.addEventListener('click', (e: MouseEvent) => {
       const target = e.target as HTMLElement
+      const id = target.id
+      const dataset = target.dataset?.role
 
-      console.log(target)
-      console.log(target.closest)
+      const classTokens = Array.from(target.classList)
+      const hitClass = classes?.some((cls: string) => classTokens.includes(cls)) ?? false
+
+      if (!ids.includes(id) && hitClass && !datasets.includes(dataset)) {
+        return
+      }
 
       eventBus.emit('bottle-monitor:transport', CATEGORY.USER, {
-
         type: USER.CLICK,
         emitTime: getDate(new Date()),
         clickTarget: {
@@ -230,15 +234,19 @@ export function UserPlugin({
   }
 
   const initPlugin = () => {
-    const { hash, history } = userOptions || {}
-    emitDeviceInfo()
-    emitFirstPageView()
-    emitUniqueVisitor()
-    !hash && captureHashRoute()
-    !history && captureHistoryRoute()
-    // _captureUserClick()
-    captureFetchRequest()
-    captureXHRRequest()
+    const { hash, history, click, pageView, uniqueVisitor, network, clickContainers = [] } = userOptions
+    // deviceInfo && emitDeviceInfo()
+    if (pageView) {
+      emitFirstPageView()
+      hash && captureHashRoute()
+      history && captureHistoryRoute()
+    }
+    uniqueVisitor && emitUniqueVisitor()
+    click && captureUserClick(clickContainers) // 类型到时候再细化吧
+    if (network) {
+      captureFetchRequest()
+      captureXHRRequest()
+    }
   }
 
   initPlugin()
