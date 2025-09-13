@@ -10,6 +10,25 @@ body {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+/* 导航栏样式 */
+:root {
+  --vp-nav-bg-color: transparent;
+  --vp-nav-screen-bg-color: transparent;
+  --vp-c-gutter: transparent;
+}
+
+.VPNav {
+  backdrop-filter: blur(10px);
+}
+
+.VPLink.link.VPNavBarMenuLink {
+  font-size: 1.2rem;
+}
+
+.VPNavBarTitle .title {
+  font-size: 1.5rem;
+}
+
 /* 代码块样式 */
 .vp-doc div[class*='language-'] {
   background: var(--vp-c-bg-elv);
@@ -28,7 +47,7 @@ body {
 }
 
 /* 内联代码样式 */
-.vp-doc :not(pre) > code {
+.vp-doc :not(pre)>code {
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-code);
   padding: 0.2em 0.4em;
@@ -46,7 +65,7 @@ body {
 
 .vp-doc a:hover {
   color: var(--vp-c-brand-light);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* 标题样式 */
@@ -71,8 +90,9 @@ body {
 }
 
 .vp-doc h2 {
-  font-size: 2rem;
-  border-bottom: 2px solid var(--vp-c-brand);
+  font-size: 2.5rem;
+  /* border-bottom: 2px solid var(--vp-c-brand); */
+  border: none;
   padding-bottom: 0.5rem;
 }
 
@@ -139,12 +159,12 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
+  padding: 1.5rem 3rem;
   background: var(--gradient-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 5rem;
+  font-size: 1.5rem;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
@@ -203,12 +223,17 @@ body {
   background: var(--vp-c-red);
 }
 
+.vp-doc .container {
+  max-width: 1580px;
+}
+
 /* 动画效果 */
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -216,18 +241,24 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
 }
 
 @keyframes glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: var(--shadow-glow);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
   }
@@ -238,11 +269,11 @@ body {
   .vp-doc h1 {
     font-size: 2rem;
   }
-  
+
   .vp-doc h2 {
     font-size: 1.5rem;
   }
-  
+
   .vp-doc .vp-button {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
