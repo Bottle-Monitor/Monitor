@@ -96,6 +96,7 @@ export type VitalsOptions = Partial<{
   // LCP: boolean
   Resource: boolean
   TTFB: boolean
+  LONGTASK: boolean
   FSPContainers: string[] // 首屏加载判断元素
 }>
 
@@ -130,7 +131,7 @@ export interface CustomPlugin extends PluginBase<Record<string, any>> {
  */
 export type Plugin = UserPlugin | VitalsPlugin | AbnormalPlugin | CustomPlugin
 export type Plugins = Plugin[]
-export type PluginFormatted = (UserPlugin | VitalsPlugin | AbnormalPlugin | CustomPlugin) & {
+export type PluginFormatted = (UserPlugin & { ids: string[], classes: string[], datasets: string[] } | VitalsPlugin | AbnormalPlugin | CustomPlugin) & {
   pluginName: BreadcrumbType
 }
 export type PluginsFormatted = PluginFormatted[]

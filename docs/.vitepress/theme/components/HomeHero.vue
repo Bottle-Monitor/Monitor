@@ -1,5 +1,22 @@
 <script lang='ts' setup>
+import { ref, useTemplateRef } from 'vue'
 import Logo from './Logo.vue'
+
+const showToast = ref(false)
+const copyRef = useTemplateRef<HTMLElement>('copyRef')
+
+async function copyInstall() {
+  try {
+    await navigator.clipboard.writeText('pnpm install @bottle-monitor/core')
+    copyRef.value!.classList.add('active')
+    setTimeout(() => {
+      copyRef.value!.classList.remove('active')
+    }, 800)
+  }
+  catch (err) {
+    console.error('复制失败', err)
+  }
+}
 </script>
 
 <template>
@@ -28,9 +45,12 @@ import Logo from './Logo.vue'
             <span class="install-suffix">$</span>
             pnpm install @bottle-monitor/core
           </p>
-          <button class="install-copy">
+          <button class="install-copy" @click="copyInstall">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-v-892f3042=""><rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-v-892f3042="" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-v-892f3042="" /></svg>
           </button>
+          <div ref="copyRef" class="copy-message">
+            ✅ 已复制到剪贴板!
+          </div>
         </div>
       </div>
       <div class="container-right">
@@ -56,7 +76,7 @@ import Logo from './Logo.vue'
     height: 100px;
     display: flex;
     align-items: center;
-    font-size: 7.5rem;
+    font-size: clamp(2rem, 6vw, 7rem);
     font-weight: 800;
     background: linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #aa44ff 100%);
     -webkit-background-clip: text;
@@ -69,7 +89,7 @@ import Logo from './Logo.vue'
   .title-sub {
     color: #fafafa;
     margin: 20px 0;
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 3vw, 3rem);
     height: 50px;
     display: flex;
     align-items: center;
@@ -82,7 +102,7 @@ import Logo from './Logo.vue'
 
   .title-description {
     color: #fafafa;
-    font-size: 2rem;
+    font-size: clamp(1rem, 2vw, 2rem);
     line-height: 2.5rem;
   }
 }
@@ -98,31 +118,70 @@ import Logo from './Logo.vue'
 }
 
 .install {
+  position: relative;
+  overflow: visible;
   background-color: #333;
   padding: 10px 0;
-  width: 500px;
-  padding: .6rem 1rem;
-  border-radius: 1rem;
+  width: fit-content;/* 容器宽度等于内容宽度 */
+  padding: clamp(0.2rem, .6vw, 0.6rem) clamp(0.6rem, 2vw, 1rem);
+  border-radius: clamp(0.5rem, 1vw, 1rem);
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   .install-text {
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 1.3vw, 1.5rem);
 
     .install-suffix {
       color: #00d4ff;
     }
   }
 
+  .copy-message {
+    white-space: nowrap;
+    position: absolute;
+    background-color: rgba(100, 100, 100, .8);
+    padding: .8rem;
+    font-size: 1.2rem;
+    border-radius: .5rem;
+    top: 120%;
+    left: 70%;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  .copy-message.active {
+    opacity: 1;
+  }
+
   .install-copy {
     background-color: rgba(100, 100, 100, .8);
-    padding: 0 1.2rem;
-    border-radius: 1rem;
+    width: clamp(2.5rem, 4vw, 4rem);
+    height: clamp(2.5rem, 4vw, 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: clamp(.7rem,1vw,1rem);
     transition: background-color .3s;
+
+    svg {
+      width: 30%;
+      height: 30%;
+    }
   }
 
   .install-copy:hover {
     background-color: rgba(203, 241, 255, 0.7);
+  }
+}
+
+@media (max-width: 1400px) {
+  .hero-container {
+    flex-direction: column;
+  }
+
+  .logo-3d {
+    display: none;
   }
 }
 </style>
