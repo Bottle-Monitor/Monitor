@@ -6,7 +6,7 @@ const components = [
   'HomeHero',
   'FeatureCard',
   'TechCards',
-  'TechGrid',
+  'Architecture',
   'CodeDemo',
   'FeatureCards',
   'ShowCase',

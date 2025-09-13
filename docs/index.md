@@ -12,7 +12,7 @@ layout: home
   <TechCards/>
 </ShowCase>
 
-<TechGrid/>
+<Architecture/>
 
 <ShowCase title="性能指标">
   <StatsCards/>
