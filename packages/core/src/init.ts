@@ -1,9 +1,9 @@
-import type {
-  BreadcrumbOptions,
-  EventBusReturn,
-  InitOptions,
-  PluginsFormatted,
-  TransportReturn,
+import type { AbnormalOptions, BreadcrumbOptions, EventBusReturn, InitOptions, PluginsFormatted, TransportReturn, UserOptions, VitalsOptions } from '@bottle-monitor/types'
+import { ErrorPlugin, UserPlugin, WebVitalsPlugin } from '@bottle-monitor/plugins'
+import {
+
+  CATEGORY,
+
 } from '@bottle-monitor/types'
 import { generateUUID, getDeviceInfo } from '@bottle-monitor/utils'
 import EventBus from './eventBus'
@@ -34,10 +34,58 @@ class BottleMonitor {
   private sessionId: string
   private deviceInfo: any
   private isInitialized: boolean = false
+  private reported: boolean = false
 
   constructor() {
     this.sessionId = generateUUID()
     this.deviceInfo = getDeviceInfo()
+    this.reported = this.isSampled()
+
+    // 注册内置插件
+    if (this.reported) {
+      this.registerPlugin({
+        name: CATEGORY.VITALS,
+        init: async ({ eventBus, config }) => {
+          WebVitalsPlugin({
+            eventBus,
+            vitalsOptions: config as VitalsOptions,
+          })
+        },
+      })
+      this.registerPlugin({
+        name: CATEGORY.USER,
+        init: async ({ eventBus, config }) => {
+          UserPlugin({
+            eventBus,
+            userOptions: config as UserOptions,
+          })
+        },
+      })
+    }
+
+    this.registerPlugin({
+      name: CATEGORY.ABNORMAL,
+      init: async ({ eventBus, config }) => {
+        ErrorPlugin({
+          eventBus,
+          abnormalOptions: config as AbnormalOptions,
+        })
+      },
+    })
+  }
+
+  /**
+   * 计算是否被采样
+   * 错误全部上报，其他数据采样
+   */
+  isSampled(): boolean {
+    if (this.config?.customSample) {
+      return this.config.customSample(this.deviceInfo)
+    }
+    if (this.config?.sampleRate) {
+      return Math.random() < this.config.sampleRate
+    }
+    return true
   }
 
   /**
@@ -148,6 +196,7 @@ class BottleMonitor {
       framework: 'normal',
       plugins: [],
       hooks: {},
+      sampleRate: 1,
       ...options,
       projectId: options.projectId || 'default-project',
     }
@@ -197,18 +246,26 @@ class BottleMonitor {
    * 初始化插件
    */
   private async initializePlugins(): Promise<void> {
+    console.log('SAMPLERATING:', this.reported)
     if (!this.config?.plugins || !this.eventBus)
       return
 
     const initPromises = this.config.plugins.map(async (pluginConfig) => {
       const plugin = this.plugins.get(pluginConfig.pluginName)
-
+      console.log('PLUGIN:', plugin)
       if (!plugin) {
         console.warn(`Plugin "${pluginConfig.pluginName}" not found`)
         return
       }
 
       try {
+        // 错误全量上报，其余部分上报
+        if (pluginConfig.pluginName !== CATEGORY.ABNORMAL) {
+          if (!this.reported) {
+            return
+          }
+        }
+
         await plugin.init({
           eventBus: this.eventBus!,
           config: pluginConfig,

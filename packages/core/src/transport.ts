@@ -207,6 +207,8 @@ function Transport(dsnURL: string, beforeTransport?: (data: any) => any, beforeP
       return
     }
 
+    console.log('Listened: ', breadcrumbType, data)
+
     // 应用全局和队列级别的hook
     let processedData = runHook(beforePushBreadcrumb, data) || data
     processedData = runHook(breadcrumb.perBeforePushBreadcrumb, processedData) || processedData

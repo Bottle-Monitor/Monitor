@@ -142,6 +142,8 @@ export interface InitOptions {
   dsnURL: string
   userId: string
   projectId?: string
+  sampleRate?: number // 采样率
+  customSample?: (data: any) => boolean // 自定义采样
   framework?: FrameWork // 项目框架
   plugins?: PluginsFormatted // 插件配置
   hooks?: Hook // 全局 hook

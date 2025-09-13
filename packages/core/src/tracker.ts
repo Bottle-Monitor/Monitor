@@ -89,8 +89,6 @@ function Tracker() {
     transport?.initBreadcrumb(collectBreadcrumbs(plugins))
     eventBus.on('bottle-monitor:transport', handleTransport)
 
-    // TODO: 设置采集率，只上报部分用户的数据
-
     // 注册 service worker
     registerServiceWorker()
 
