@@ -10,6 +10,25 @@ body {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+/* 导航栏样式 */
+:root {
+  --vp-nav-bg-color: transparent;
+  --vp-nav-screen-bg-color: transparent;
+  --vp-c-gutter: transparent;
+}
+
+.VPNav{
+  backdrop-filter: blur(10px);
+}
+
+.VPLink.link.VPNavBarMenuLink {
+  font-size: 1.2rem;
+}
+
+.VPNavBarTitle .title {
+  font-size: 1.5rem;
+}
+
 /* 代码块样式 */
 .vp-doc div[class*='language-'] {
   background: var(--vp-c-bg-elv);
