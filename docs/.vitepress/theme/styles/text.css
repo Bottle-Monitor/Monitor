@@ -1,0 +1,15 @@
+.gradient-text {
+    display: flex;
+    margin: 0;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+    font-size: 7.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #aa44ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+    letter-spacing: -0.02em;
+}
