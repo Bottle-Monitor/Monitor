@@ -5,11 +5,13 @@ import './styles/overrides.css'
 const components = [
   'HomeHero',
   'FeatureCard',
-  'TechShowcase',
+  'TechCards',
+  'TechGrid',
   'CodeDemo',
   'FeatureCards',
   'ShowCase',
   'StatsCards',
+  'EcosystemCards',
 ]
 
 export default {
