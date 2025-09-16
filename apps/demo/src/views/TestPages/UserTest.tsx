@@ -9,12 +9,12 @@ import {
   SyncOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import { getBottleMonitor } from '@bottle-monitor/core'
-import { Alert, Badge, Button, Card, Col, Input, message, Row, Select, Slider, Space, Statistic, Switch, Typography } from 'antd'
+import { Alert, Button, Card, Col, Input, message, Row, Select, Slider, Space, Statistic, Switch, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { monitoringService } from '../../services/monitoringService'
+import { TestUtils } from '../../utils/testUtils'
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 const { TextArea } = Input
 const { Option } = Select
 
@@ -31,13 +31,9 @@ const UserTest: React.FC = () => {
   const [serverStats, setServerStats] = useState<any>(null)
   const [isConnected, setIsConnected] = useState(false)
 
-  // 获取监控实例
-  const monitor = getBottleMonitor()
-
   // 检查服务器连接状态
   useEffect(() => {
     checkServerConnection()
-    // 每5秒检查一次连接状态
     const interval = setInterval(checkServerConnection, 5000)
     return () => clearInterval(interval)
   }, [])
@@ -68,36 +64,13 @@ const UserTest: React.FC = () => {
 
     setIsRecording(true)
     setRecordedEvents([])
-    message.success('开始记录用户行为')
-
-    // 记录开始事件
-    if (monitor) {
-      monitor.track('recording_started', {
-        timestamp: Date.now(),
-        source: 'UserTest',
-        category: 'user',
-        type: 'test_start',
-      })
-    }
+    message.success('开始记录用户行为 - SDK 将自动捕获所有用户行为')
   }
 
   // 停止记录
   const stopRecording = () => {
     setIsRecording(false)
     message.info('停止记录用户行为')
-
-    // 记录停止事件
-    if (monitor) {
-      monitor.track('recording_stopped', {
-        timestamp: Date.now(),
-        eventCount: recordedEvents.length,
-        source: 'UserTest',
-        category: 'user',
-        type: 'test_stop',
-      })
-    }
-
-    // 立即同步数据到服务器
     syncDataToServer()
   }
 
@@ -119,7 +92,7 @@ const UserTest: React.FC = () => {
     message.success('记录已清理')
   }
 
-  // 记录点击事件
+  // 记录点击事件 - 纯业务逻辑，SDK 自动捕获
   const recordClick = (target: string, x: number, y: number) => {
     const event = {
       type: 'click',
@@ -128,57 +101,22 @@ const UserTest: React.FC = () => {
       y,
       timestamp: Date.now(),
     }
-
     setRecordedEvents(prev => [...prev, event])
-
-    if (monitor) {
-      // 上报到监控SDK
-      monitor.track('test_click', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'click',
-      })
-
-      // 直接上报到后端服务器
-      reportToServer('click', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'click',
-      })
-    }
+    console.log('用户点击事件:', event)
   }
 
-  // 记录页面访问
+  // 记录页面访问 - 纯业务逻辑，SDK 自动捕获
   const recordPageView = (url: string) => {
     const event = {
       type: 'pageView',
       url,
       timestamp: Date.now(),
     }
-
     setRecordedEvents(prev => [...prev, event])
-
-    if (monitor) {
-      monitor.track('test_page_view', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'pageView',
-      })
-
-      // 直接上报到后端服务器
-      reportToServer('pageView', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'pageView',
-      })
-    }
+    console.log('页面访问事件:', event)
   }
 
-  // 记录路由变化
+  // 记录路由变化 - 纯业务逻辑，SDK 自动捕获
   const recordRouteChange = (from: string, to: string) => {
     const event = {
       type: 'routeChange',
@@ -186,28 +124,11 @@ const UserTest: React.FC = () => {
       to,
       timestamp: Date.now(),
     }
-
     setRecordedEvents(prev => [...prev, event])
-
-    if (monitor) {
-      monitor.track('test_route_change', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'history',
-      })
-
-      // 直接上报到后端服务器
-      reportToServer('history', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'history',
-      })
-    }
+    console.log('路由变化事件:', event)
   }
 
-  // 记录网络请求
+  // 记录网络请求 - 纯业务逻辑，SDK 自动捕获
   const recordNetworkRequest = (method: string, url: string, status: number) => {
     const event = {
       type: 'network',
@@ -216,28 +137,20 @@ const UserTest: React.FC = () => {
       status,
       timestamp: Date.now(),
     }
-
     setRecordedEvents(prev => [...prev, event])
+    console.log('网络请求事件:', event)
 
-    if (monitor) {
-      monitor.track('test_network', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'network',
+    // 实际发起网络请求，SDK 会自动捕获
+    fetch(url, { method })
+      .then((response) => {
+        console.log(`网络请求 ${method} ${url} 完成，状态: ${response.status}`)
       })
-
-      // 直接上报到后端服务器
-      reportToServer('network', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'network',
+      .catch((error) => {
+        console.error(`网络请求 ${method} ${url} 失败:`, error)
       })
-    }
   }
 
-  // 记录自定义事件
+  // 记录自定义事件 - 纯业务逻辑
   const recordCustomEvent = () => {
     if (!customEvent.trim()) {
       message.warning('请输入事件名称')
@@ -250,63 +163,11 @@ const UserTest: React.FC = () => {
       data: eventData,
       timestamp: Date.now(),
     }
-
     setRecordedEvents(prev => [...prev, event])
-
-    if (monitor) {
-      monitor.track('test_custom_event', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'custom',
-      })
-
-      // 直接上报到后端服务器
-      reportToServer('custom', {
-        ...event,
-        source: 'UserTest',
-        category: 'user',
-        type: 'custom',
-      })
-    }
-
+    console.log('自定义事件:', event)
     message.success('自定义事件已记录')
     setCustomEvent('')
     setEventData('')
-  }
-
-  // 直接上报数据到后端服务器
-  const reportToServer = async (type: string, data: any) => {
-    if (!isConnected) {
-      console.warn('服务器未连接，无法上报数据')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/report', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          category: 'user',
-          type,
-          data,
-          timestamp: Date.now(),
-          source: 'UserTest',
-        }),
-      })
-
-      if (response.ok) {
-        console.log(`数据上报成功: ${type}`, data)
-      }
-      else {
-        console.error(`数据上报失败: ${type}`, response.status)
-      }
-    }
-    catch (error) {
-      console.error(`数据上报错误: ${type}`, error)
-    }
   }
 
   // 自动点击测试
@@ -319,7 +180,6 @@ const UserTest: React.FC = () => {
       const randomTarget = targets[Math.floor(Math.random() * targets.length)]
       const x = Math.floor(Math.random() * 800)
       const y = Math.floor(Math.random() * 600)
-
       recordClick(randomTarget, x, y)
     }, clickInterval)
 
@@ -340,11 +200,9 @@ const UserTest: React.FC = () => {
     ]
 
     let currentIndex = 0
-
     const interval = setInterval(() => {
       const route = routes[currentIndex]
       recordRouteChange(route.from, route.to)
-
       currentIndex = (currentIndex + 1) % routes.length
     }, navigationInterval)
 
@@ -357,30 +215,8 @@ const UserTest: React.FC = () => {
       message.warning('请先开始记录')
       return
     }
-
-    const behaviors = [
-      () => recordClick('登录按钮', 100, 200),
-      () => recordPageView('/dashboard'),
-      () => recordRouteChange('/login', '/dashboard'),
-      () => recordNetworkRequest('GET', '/api/user/profile', 200),
-      () => recordClick('设置按钮', 300, 150),
-      () => recordRouteChange('/dashboard', '/settings'),
-      () => recordNetworkRequest('POST', '/api/user/settings', 200),
-      () => recordClick('返回按钮', 50, 50),
-      () => recordRouteChange('/settings', '/dashboard'),
-    ]
-
-    let index = 0
-    const interval = setInterval(() => {
-      if (index < behaviors.length) {
-        behaviors[index]()
-        index++
-      }
-      else {
-        clearInterval(interval)
-        message.success('用户行为序列模拟完成')
-      }
-    }, 500)
+    TestUtils.simulateUserBehavior()
+    message.success('用户行为序列模拟已启动')
   }
 
   // 模拟表单提交
@@ -389,27 +225,8 @@ const UserTest: React.FC = () => {
       message.warning('请先开始记录')
       return
     }
-
-    const formEvents = [
-      () => recordClick('用户名输入框', 200, 100),
-      () => recordClick('密码输入框', 200, 150),
-      () => recordClick('记住我复选框', 180, 200),
-      () => recordClick('登录按钮', 200, 250),
-      () => recordNetworkRequest('POST', '/api/auth/login', 200),
-      () => recordPageView('/dashboard'),
-    ]
-
-    let index = 0
-    const interval = setInterval(() => {
-      if (index < formEvents.length) {
-        formEvents[index]()
-        index++
-      }
-      else {
-        clearInterval(interval)
-        message.success('表单提交模拟完成')
-      }
-    }, 300)
+    TestUtils.simulateFormSubmission()
+    message.success('表单提交模拟已启动')
   }
 
   // 模拟购物车操作
@@ -418,31 +235,8 @@ const UserTest: React.FC = () => {
       message.warning('请先开始记录')
       return
     }
-
-    const cartEvents = [
-      () => recordClick('商品1', 100, 100),
-      () => recordClick('添加到购物车', 100, 150),
-      () => recordNetworkRequest('POST', '/api/cart/add', 200),
-      () => recordClick('商品2', 200, 100),
-      () => recordClick('添加到购物车', 200, 150),
-      () => recordNetworkRequest('POST', '/api/cart/add', 200),
-      () => recordClick('购物车图标', 300, 50),
-      () => recordPageView('/cart'),
-      () => recordClick('结算按钮', 250, 300),
-      () => recordPageView('/checkout'),
-    ]
-
-    let index = 0
-    const interval = setInterval(() => {
-      if (index < cartEvents.length) {
-        cartEvents[index]()
-        index++
-      }
-      else {
-        clearInterval(interval)
-        message.success('购物车操作模拟完成')
-      }
-    }, 400)
+    TestUtils.simulateShoppingCart()
+    message.success('购物车操作模拟已启动')
   }
 
   return (
@@ -450,14 +244,14 @@ const UserTest: React.FC = () => {
       <div style={{ marginBottom: 24 }}>
         <Title level={2}>用户行为测试页面</Title>
         <Text type="secondary">
-          测试各种用户行为监控功能，包括点击、页面访问、路由变化、网络请求等
+          测试各种用户行为监控功能，SDK 将自动捕获所有用户行为，无需手动埋点
         </Text>
       </div>
 
       <Alert
-        message="测试说明"
-        description="这个页面用于测试用户行为监控功能。点击各种按钮和链接，或者使用自动测试功能来生成用户行为数据。"
-        type="info"
+        message="全埋点模式说明"
+        description="此页面采用全埋点模式，SDK 会自动捕获所有用户行为，包括点击、页面访问、路由变化、网络请求等。您只需要触发相应的用户行为，SDK 会自动处理监控逻辑。"
+        type="success"
         showIcon
         style={{ marginBottom: 24 }}
       />
@@ -524,12 +318,11 @@ const UserTest: React.FC = () => {
               type="dashed"
               icon={<PlayCircleOutlined />}
               onClick={() => {
-                // 快速测试数据上报
                 if (isConnected) {
                   recordClick('快速测试按钮', 100, 100)
                   recordPageView('/quick-test')
                   recordRouteChange('/current', '/quick-test')
-                  message.success('快速测试完成，请查看统计变化')
+                  message.success('快速测试完成，SDK 已自动捕获所有事件')
                 }
                 else {
                   message.error('请先连接服务器')
@@ -546,7 +339,7 @@ const UserTest: React.FC = () => {
         {isRecording && (
           <Alert
             message="正在记录中"
-            description={`已记录 ${recordedEvents.length} 个事件`}
+            description={`已记录 ${recordedEvents.length} 个事件，SDK 正在自动捕获用户行为`}
             type="success"
             showIcon
             style={{ marginTop: 16 }}
@@ -815,36 +608,6 @@ const UserTest: React.FC = () => {
             </Col>
           </Row>
 
-          <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-            <Col xs={24} sm={8}>
-              <Card size="small" title="用户行为数据">
-                <Statistic
-                  title="用户行为"
-                  value={serverStats?.userActions || 0}
-                  suffix="个"
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card size="small" title="错误数据">
-                <Statistic
-                  title="错误数量"
-                  value={serverStats?.errors || 0}
-                  suffix="个"
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card size="small" title="性能数据">
-                <Statistic
-                  title="性能指标"
-                  value={serverStats?.vitals || 0}
-                  suffix="个"
-                />
-              </Card>
-            </Col>
-          </Row>
-
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text strong>
               已记录
@@ -887,111 +650,26 @@ const UserTest: React.FC = () => {
         </Space>
       </Card>
 
-      {/* 服务器状态 */}
-      <Card title="服务器状态" style={{ marginTop: 24 }}>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Badge
-              status={isConnected ? 'success' : 'error'}
-              text={isConnected ? '已连接' : '未连接'}
-            />
-            <SyncOutlined
-              style={{ marginLeft: 8, color: isConnected ? 'green' : 'red' }}
-            />
-          </div>
-
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12}>
-              <Button
-                type="primary"
-                icon={<SyncOutlined />}
-                onClick={checkServerConnection}
-                block
-              >
-                测试连接
-              </Button>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Button
-                icon={<SyncOutlined />}
-                onClick={syncDataToServer}
-                disabled={!isConnected}
-                block
-              >
-                同步数据
-              </Button>
-            </Col>
-          </Row>
-
-          {serverStats && (
-            <div style={{ marginTop: 16 }}>
-              <Text strong>服务器统计:</Text>
-              <pre style={{ background: '#f0f0f0', padding: 10, borderRadius: 4, maxHeight: 200, overflowY: 'auto' }}>
-                {JSON.stringify(serverStats, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          {/* 数据上报状态监控 */}
-          <div style={{ marginTop: 16 }}>
-            <Text strong>数据上报状态:</Text>
-            <div style={{ marginTop: 8 }}>
-              <Alert
-                message="实时监控"
-                description={(
-                  <div>
-                    <p>
-                      • 本地记录:
-                      {recordedEvents.length}
-                      {' '}
-                      个事件
-                    </p>
-                    <p>
-                      • 服务器统计:
-                      {serverStats?.totalEvents || 0}
-                      {' '}
-                      个事件
-                    </p>
-                    <p>
-                      • 数据同步状态:
-                      {isConnected ? '正常' : '异常'}
-                    </p>
-                    <p>
-                      • 最后更新:
-                      {serverStats?.lastUpdate ? new Date(serverStats.lastUpdate).toLocaleTimeString() : '未知'}
-                    </p>
-                  </div>
-                )}
-                type={isConnected ? 'success' : 'error'}
-                showIcon
-              />
-            </div>
-          </div>
-        </Space>
-      </Card>
-
       {/* 注意事项 */}
-      <Card title="注意事项" style={{ marginTop: 24 }}>
+      <Card title="全埋点模式说明" style={{ marginTop: 24 }}>
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Text type="secondary">
-            用户行为测试完成后，可以在以下页面查看结果：
-          </Text>
-          <ul>
-            <li><Text>用户行为页面：查看所有用户行为数据</Text></li>
-            <li><Text>仪表盘：查看用户行为统计和趋势</Text></li>
-            <li><Text>控制台：查看本地行为日志</Text></li>
-          </ul>
+          <Alert
+            message="全埋点优势"
+            description="1. 无需手动埋点，SDK 自动捕获所有用户行为\n2. 业务代码与监控代码完全分离\n3. 减少开发工作量，提高开发效率\n4. 确保数据收集的完整性和准确性"
+            type="success"
+            showIcon
+          />
 
           <Alert
-            message="前后端联调说明"
-            description="1. 确保监控服务器正在运行\n2. 测试数据会自动上报到后端服务器\n3. 可以在用户行为页面实时查看测试数据统计\n4. 使用'同步数据'按钮手动同步数据到服务器"
+            message="使用说明"
+            description="1. 点击'开始记录'后，SDK 会自动捕获所有用户行为\n2. 点击各种按钮和链接，SDK 会自动记录点击事件\n3. 发起网络请求，SDK 会自动记录网络请求\n4. 页面跳转，SDK 会自动记录路由变化\n5. 所有数据会自动上报到监控服务器"
             type="info"
             showIcon
           />
 
           <Alert
-            message="重要提醒"
-            description="1. 请先开始记录再进行测试\n2. 自动测试功能会持续生成数据，请及时停止\n3. 所有行为数据都会上报到监控服务器\n4. 可以在浏览器控制台查看详细的事件信息"
+            message="注意事项"
+            description="1. 请先开始记录再进行测试\n2. 自动测试功能会持续生成数据，请及时停止\n3. 所有行为数据都会自动上报到监控服务器\n4. 可以在浏览器控制台查看详细的事件信息"
             type="warning"
             showIcon
           />

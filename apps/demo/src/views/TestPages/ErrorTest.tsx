@@ -8,12 +8,12 @@ import {
   SyncOutlined,
   WarningOutlined,
 } from '@ant-design/icons'
-import { getBottleMonitor } from '@bottle-monitor/core'
 import { Alert, Button, Card, Col, Input, message, Row, Select, Space, Statistic, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { monitoringService } from '../../services/monitoringService'
+import { TestUtils } from '../../utils/testUtils'
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 const { TextArea } = Input
 const { Option } = Select
 
@@ -24,13 +24,9 @@ const ErrorTest: React.FC = () => {
   const [serverStats, setServerStats] = useState<any>(null)
   const [isConnected, setIsConnected] = useState(false)
 
-  // 获取监控实例
-  const monitor = getBottleMonitor()
-
   // 检查服务器连接状态
   useEffect(() => {
     checkServerConnection()
-    // 每5秒检查一次连接状态
     const interval = setInterval(checkServerConnection, 5000)
     return () => clearInterval(interval)
   }, [])
@@ -64,177 +60,57 @@ const ErrorTest: React.FC = () => {
     }
   }
 
-  // 触发JavaScript错误
+  // 触发JavaScript错误 - 纯业务逻辑，SDK 自动捕获
   const triggerJavaScriptError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    try {
-      // 故意触发一个错误
-      const obj: any = null
-      obj.nonExistentMethod()
-    }
-    catch (error) {
-      console.error('JavaScript错误已触发:', error)
-
-      // 手动上报错误
-      if (monitor) {
-        monitor.track('javascript_error', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'codeError',
-          source: 'ErrorTest',
-        })
-
-        // 直接上报到后端服务器
-        reportToServer('codeError', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'codeError',
-          source: 'ErrorTest',
-        })
-      }
-    }
+    TestUtils.triggerJavaScriptError()
+    message.success('JavaScript错误已触发，SDK 会自动捕获')
   }
 
-  // 触发Promise错误
+  // 触发Promise错误 - 纯业务逻辑，SDK 自动捕获
   const triggerPromiseError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    const promise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error('这是一个Promise错误'))
-      }, 100)
-    })
-
-    promise.catch((error) => {
-      console.error('Promise错误已触发:', error)
-
-      // 手动上报错误
-      if (monitor) {
-        monitor.track('promise_error', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'unhandledrejection',
-          source: 'ErrorTest',
-        })
-
-        // 直接上报到后端服务器
-        reportToServer('unhandledrejection', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'unhandledrejection',
-          source: 'ErrorTest',
-        })
-      }
-    })
+    TestUtils.triggerPromiseError()
+    message.success('Promise错误已触发，SDK 会自动捕获')
   }
 
-  // 触发未处理的Promise错误
+  // 触发未处理的Promise错误 - 纯业务逻辑，SDK 自动捕获
   const triggerUnhandledPromiseError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error('这是一个未处理的Promise错误'))
-      }, 100)
-    })
+    TestUtils.triggerUnhandledPromiseError()
+    message.success('未处理Promise错误已触发，SDK 会自动捕获')
   }
 
-  // 触发资源加载错误
+  // 触发资源加载错误 - 纯业务逻辑，SDK 自动捕获
   const triggerResourceError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    const img = new Image()
-    img.onerror = () => {
-      console.error('资源加载错误已触发')
-
-      // 手动上报错误
-      if (monitor) {
-        monitor.track('resource_error', {
-          error: '资源加载失败',
-          url: 'https://example.com/nonexistent-image.jpg',
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'resource',
-          source: 'ErrorTest',
-        })
-
-        // 直接上报到后端服务器
-        reportToServer('resource', {
-          error: '资源加载失败',
-          url: 'https://example.com/nonexistent-image.jpg',
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'resource',
-          source: 'ErrorTest',
-        })
-      }
-    }
-    img.src = 'https://example.com/nonexistent-image.jpg'
+    TestUtils.triggerResourceError()
+    message.success('资源加载错误已触发，SDK 会自动捕获')
   }
 
-  // 触发网络请求错误
+  // 触发网络请求错误 - 纯业务逻辑，SDK 自动捕获
   const triggerNetworkError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    fetch('https://httpstat.us/500')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-        }
-        return response.json()
-      })
-      .catch((error) => {
-        console.error('网络请求错误已触发:', error)
-
-        // 手动上报错误
-        if (monitor) {
-          monitor.track('network_error', {
-            error: error instanceof Error ? error.message : String(error),
-            url: 'https://httpstat.us/500',
-            timestamp: Date.now(),
-            category: 'error',
-            type: 'network',
-            source: 'ErrorTest',
-          })
-
-          // 直接上报到后端服务器
-          reportToServer('network', {
-            error: error instanceof Error ? error.message : String(error),
-            url: 'https://httpstat.us/500',
-            timestamp: Date.now(),
-            category: 'error',
-            type: 'network',
-            source: 'ErrorTest',
-          })
-        }
-      })
+    TestUtils.triggerNetworkError()
+    message.success('网络请求错误已触发，SDK 会自动捕获')
   }
 
-  // 触发白屏检测
+  // 触发白屏检测 - 纯业务逻辑，SDK 自动捕获
   const triggerWhitescreenError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
@@ -249,33 +125,12 @@ const ErrorTest: React.FC = () => {
     if (ctx) {
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, 100, 100)
-      // 这里可以添加白屏检测逻辑
     }
 
-    // 手动上报白屏错误
-    if (monitor) {
-      monitor.track('whitescreen_error', {
-        error: '检测到白屏情况',
-        timestamp: Date.now(),
-        category: 'error',
-        type: 'whitescreen',
-        source: 'ErrorTest',
-      })
-
-      // 直接上报到后端服务器
-      reportToServer('whitescreen', {
-        error: '检测到白屏情况',
-        timestamp: Date.now(),
-        category: 'error',
-        type: 'whitescreen',
-        source: 'ErrorTest',
-      })
-    }
-
-    message.info('白屏检测已触发，请查看控制台')
+    message.success('白屏检测已触发，SDK 会自动捕获')
   }
 
-  // 手动上报自定义错误
+  // 手动上报自定义错误 - 纯业务逻辑
   const reportCustomError = () => {
     if (!customError.trim()) {
       message.warning('请输入错误信息')
@@ -287,170 +142,52 @@ const ErrorTest: React.FC = () => {
       return
     }
 
-    if (monitor) {
-      monitor.track('custom_error', {
-        message: customError,
-        level: errorLevel,
-        timestamp: Date.now(),
-        extra: {
-          source: 'ErrorTest',
-          userAction: 'manual_report',
-        },
-      })
-      message.success('自定义错误已上报')
-      setCustomError('')
-    }
-    else {
-      message.error('监控SDK未初始化')
-    }
+    // 直接抛出错误，让 SDK 自动捕获
+    throw new Error(customError)
   }
 
-  // 批量生成错误
+  // 批量生成错误 - 纯业务逻辑，SDK 自动捕获
   const generateBatchErrors = async () => {
     if (isGenerating)
       return
 
     setIsGenerating(true)
-    const errors = [
-      '批量错误测试 - 错误1',
-      '批量错误测试 - 错误2',
-      '批量错误测试 - 错误3',
-      '批量错误测试 - 错误4',
-      '批量错误测试 - 错误5',
-    ]
+    TestUtils.generateBatchErrors(5)
 
-    for (let i = 0; i < errors.length; i++) {
-      if (monitor) {
-        monitor.track('batch_error', {
-          message: errors[i],
-          level: 'error',
-          timestamp: Date.now(),
-          batchId: `batch_${Date.now()}`,
-          sequence: i + 1,
-        })
-      }
-      await new Promise(resolve => setTimeout(resolve, 200))
-    }
-
-    setIsGenerating(false)
-    message.success('批量错误已生成')
+    setTimeout(() => {
+      setIsGenerating(false)
+      message.success('批量错误已生成，SDK 会自动捕获所有错误')
+    }, 1000)
   }
 
-  // 触发语法错误
+  // 触发语法错误 - 纯业务逻辑，SDK 自动捕获
   const triggerSyntaxError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    try {
-      // 使用eval故意触发语法错误
-      eval('function test() { console.log("test") }')
-    }
-    catch (error) {
-      console.error('语法错误已触发:', error)
-
-      // 手动上报错误
-      if (monitor) {
-        monitor.track('syntax_error', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'syntax',
-          source: 'ErrorTest',
-        })
-      }
-    }
+    TestUtils.triggerSyntaxError()
+    message.success('语法错误已触发，SDK 会自动捕获')
   }
 
-  // 触发类型错误
+  // 触发类型错误 - 纯业务逻辑，SDK 自动捕获
   const triggerTypeError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    try {
-      const str = 'hello'
-      ;(str as any).toFixed(2) // 字符串没有toFixed方法
-    }
-    catch (error) {
-      console.error('类型错误已触发:', error)
-
-      // 手动上报错误
-      if (monitor) {
-        monitor.track('type_error', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'type',
-          source: 'ErrorTest',
-        })
-      }
-    }
+    TestUtils.triggerTypeError()
+    message.success('类型错误已触发，SDK 会自动捕获')
   }
 
-  // 触发范围错误
+  // 触发范围错误 - 纯业务逻辑，SDK 自动捕获
   const triggerRangeError = () => {
     if (!isConnected) {
       message.error('无法连接到监控服务器，请检查服务器状态')
       return
     }
-
-    try {
-      const arr = Array.from({ length: -1 }) // 负数长度会抛出RangeError
-    }
-    catch (error) {
-      console.error('范围错误已触发:', error)
-
-      // 手动上报错误
-      if (monitor) {
-        monitor.track('range_error', {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          timestamp: Date.now(),
-          category: 'error',
-          type: 'range',
-          source: 'ErrorTest',
-        })
-      }
-    }
-  }
-
-  // 直接上报数据到后端服务器
-  const reportToServer = async (type: string, data: any) => {
-    if (!isConnected) {
-      console.warn('服务器未连接，无法上报数据')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/report', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          category: 'error',
-          type,
-          data,
-          timestamp: Date.now(),
-          source: 'ErrorTest',
-        }),
-      })
-
-      if (response.ok) {
-        console.log(`错误数据上报成功: ${type}`, data)
-      }
-      else {
-        console.error(`错误数据上报失败: ${type}`, response.status)
-      }
-    }
-    catch (error) {
-      console.error(`错误数据上报错误: ${type}`, error)
-    }
+    TestUtils.triggerRangeError()
+    message.success('范围错误已触发，SDK 会自动捕获')
   }
 
   return (
@@ -458,14 +195,14 @@ const ErrorTest: React.FC = () => {
       <div style={{ marginBottom: 24 }}>
         <Title level={2}>错误测试页面</Title>
         <Text type="secondary">
-          测试各种类型的错误监控功能，包括JavaScript错误、Promise错误、资源加载错误等
+          测试各种类型的错误监控功能，SDK 将自动捕获所有错误，无需手动埋点
         </Text>
       </div>
 
       <Alert
-        message="测试说明"
-        description="点击下面的按钮可以触发各种类型的错误，这些错误会被监控SDK自动捕获并上报到服务器。请确保监控服务器正在运行。"
-        type="info"
+        message="全埋点错误监控说明"
+        description="此页面采用全埋点模式，SDK 会自动捕获所有 JavaScript 错误、Promise 错误、资源加载错误、网络请求错误等。您只需要触发相应的错误，SDK 会自动处理监控逻辑。"
+        type="success"
         showIcon
         style={{ marginBottom: 24 }}
       />
@@ -658,16 +395,22 @@ const ErrorTest: React.FC = () => {
       </Card>
 
       {/* 测试结果 */}
-      <Card title="测试结果">
+      <Card title="全埋点错误监控说明">
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Text type="secondary">
-            错误测试完成后，可以在以下页面查看结果：
-          </Text>
-          <ul>
-            <li><Text>错误监控页面：查看所有捕获的错误</Text></li>
-            <li><Text>仪表盘：查看错误统计和趋势</Text></li>
-            <li><Text>控制台：查看本地错误日志</Text></li>
-          </ul>
+          <Alert
+            message="全埋点优势"
+            description="1. 无需手动埋点，SDK 自动捕获所有错误\n2. 业务代码与监控代码完全分离\n3. 减少开发工作量，提高开发效率\n4. 确保错误收集的完整性和准确性"
+            type="success"
+            showIcon
+          />
+
+          <Alert
+            message="使用说明"
+            description="1. 点击各种错误测试按钮，SDK 会自动捕获错误\n2. JavaScript 错误会被自动捕获并上报\n3. Promise 错误会被自动捕获并上报\n4. 资源加载错误会被自动捕获并上报\n5. 网络请求错误会被自动捕获并上报"
+            type="info"
+            showIcon
+          />
+
           <Alert
             message="注意事项"
             description="1. 确保监控服务器正在运行\n2. 某些错误可能不会立即显示，需要等待上报\n3. 重复的错误会被自动去重\n4. 可以在浏览器控制台查看详细的错误信息"

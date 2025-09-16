@@ -28,13 +28,14 @@ const Layout: React.FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
 
-  // 初始化监控SDK
+  // 初始化监控SDK - 全埋点模式
   useEffect(() => {
-    const monitor = bottleMonitorInit({
+    bottleMonitorInit({
       dsnURL: '/api/report',
       userId: `demo-user-${Date.now()}`,
       projectId: 'bottle-monitor-demo',
       framework: 'react',
+      sampleRate: 1, // 100% 采样率，确保测试数据完整
       plugins: [
         userPlugin({
           options: {
@@ -43,18 +44,26 @@ const Layout: React.FC = () => {
             pageView: true,
             network: true,
             deviceInfo: true,
+            uniqueVisitor: true,
+            clickContainers: ['test-button', 'demo-button'],
           },
-          breadcrumbs: { capacity: 50 },
+          breadcrumbs: {
+            capacity: 50,
+            uploadInterval: 30000,
+          },
         }),
         vitalsPlugin({
           options: {
-            FCP: true,
-            LCP: true,
-            CLS: true,
-            FID: true,
             TTFB: true,
+            INP: true,
+            FPS: true,
+            LONGTASK: true,
+            Resource: true,
           },
-          breadcrumbs: { uploadInterval: 30000 },
+          breadcrumbs: {
+            uploadInterval: 30000,
+            capacity: 20,
+          },
         }),
         abnormalPlugin({
           options: {
@@ -63,14 +72,22 @@ const Layout: React.FC = () => {
             resource: true,
             network: true,
             whitescreen: true,
+            repeatError: false, // 错误去重
           },
-          breadcrumbs: { capacity: 1 },
+          breadcrumbs: {
+            capacity: 10,
+            uploadInterval: 10000,
+          },
         }),
       ],
       hooks: {
         beforeTransport: (dataArray) => {
-          console.log('监控数据上报:', dataArray)
+          console.log('🚀 监控数据上报:', dataArray.length, '条数据')
           return dataArray
+        },
+        beforePushBreadcrumb: (breadcrumb) => {
+          console.log('📝 面包屑记录:', breadcrumb)
+          return breadcrumb
         },
       },
     })
